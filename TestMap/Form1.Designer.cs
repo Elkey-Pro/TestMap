@@ -73,7 +73,7 @@
             this.gmap.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
             this.gmap.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
             this.gmap.ShowTileGridLines = false;
-            this.gmap.Size = new System.Drawing.Size(776, 360);
+            this.gmap.Size = new System.Drawing.Size(1090, 514);
             this.gmap.TabIndex = 0;
             this.gmap.Zoom = 13D;
             // 
@@ -214,7 +214,7 @@
             this.nud_zoom.Size = new System.Drawing.Size(69, 20);
             this.nud_zoom.TabIndex = 15;
             this.nud_zoom.Value = new decimal(new int[] {
-            5,
+            7,
             0,
             0,
             0});
@@ -223,7 +223,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1114, 604);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.nud_zoom);
             this.Controls.Add(this.label6);
