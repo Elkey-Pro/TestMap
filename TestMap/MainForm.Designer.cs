@@ -46,6 +46,7 @@
             this.nud_maxzoom = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.nud_zoom = new System.Windows.Forms.NumericUpDown();
+            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.nud_minzoom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_maxzoom)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_zoom)).BeginInit();
@@ -219,11 +220,22 @@
             0,
             0});
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(773, 16);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(104, 42);
+            this.button2.TabIndex = 17;
+            this.button2.Text = "Export Image";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1114, 604);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.nud_zoom);
             this.Controls.Add(this.label6);
@@ -270,6 +282,7 @@
         private System.Windows.Forms.NumericUpDown nud_maxzoom;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown nud_zoom;
+        private System.Windows.Forms.Button button2;
     }
 }
 

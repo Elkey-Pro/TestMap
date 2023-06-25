@@ -20,7 +20,7 @@ namespace TestMap
         {
             InitializeComponent();
         }
-        public string ExcelPath = @"H:\Desktop\FreeLancer\Bussiness Process\XLSX_OUTPUT\FL-Miami-6-7-23-1023AM.xlsx";
+        public string ExcelPath = @"C:\Personal\TDQ\PJ\FREEL\cefSharpTest\Insert Image\Insert Image\bin\x86\Debug\XLSX_OUTPUT\FL-Miami-6-7-23-1023AM.xlsx";
         public DataTable Excel_data;
 
         private void Form1_Load(object sender, EventArgs e)
@@ -87,6 +87,14 @@ namespace TestMap
                     }
                 }
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Image Mapimage = gmap.ToImage();
+            string ImagePath = Environment.CurrentDirectory + "MapImage.Png";
+            Mapimage.Save(ImagePath);
+            Mapimage.Dispose();
         }
     }
 }
