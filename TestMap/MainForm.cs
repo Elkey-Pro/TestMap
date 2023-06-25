@@ -14,9 +14,9 @@ using GMap.NET.WindowsForms;
 
 namespace TestMap
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -25,7 +25,8 @@ namespace TestMap
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Excel_data = ReadExcelFile("data-A", ExcelPath);
+            txt_xlsxPath.Text = Environment.CurrentDirectory + "XLSX_OUTPUT" ;
+            txt_DocxOutPutPath.Text = Environment.CurrentDirectory + "WORD_OUTPUT";
 
         }
 
@@ -95,6 +96,96 @@ namespace TestMap
             string ImagePath = Environment.CurrentDirectory + "MapImage.Png";
             Mapimage.Save(ImagePath);
             Mapimage.Dispose();
+        }
+
+        private void nud_zoom_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtLong_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtLat_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void nud_maxzoom_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void nud_minzoom_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtCityName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtCountryName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void gmap_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
