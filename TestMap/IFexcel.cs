@@ -29,6 +29,7 @@ namespace TestMap
         public IFexcel(string ExcelPath)
         {
             xlApp = new Excel.Application();
+            xlApp.DisplayAlerts = false;
             xlWorkBook = xlApp.Workbooks.Open(ExcelPath);
         }
             
@@ -36,39 +37,41 @@ namespace TestMap
 
 
         public class ExcelChart 
-        { 
-            int Left {  get; set; }
-            int Top { get; set; }
-            int Width { get; set; }
-            int Height { get; set; }
-            string ExportLocation { get; set; }
-            string ExportName { get; set; }
-            string ChartImgName { get;set; }
-            string ChartTitle { get; set; }
+        {
+            public int Left {  get; set; }
+            public int Top { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            //public string ExportName { get; set; }
+            //public string ChartImgName { get;set; }
+            public string ChartTitle { get; set; }
 
-            string ChartDataRage { get;set; }
-            string XdataRage { get; set; }
-            string YdataRage { get; set; }
-            string SerieName { get;set; }
-            Excel.XlChartType ChartType { get; set; }
-            bool isLineNear { get; set; }
-            Microsoft.Office.Core.MsoThemeColorIndex ChartColor { get;set; }
-            Excel.XlRgbColor fontColor { get; set; }
-            string DataSymbol { get; set; }
+            public string ChartDataRage { get;set; }
+            public string XdataRage { get; set; }
+            public string YdataRage { get; set; }
+            public string SerieName { get;set; }
+            public Excel.XlChartType ChartType { get; set; }
+            public bool isLineNear { get; set; }
+            public  Microsoft.Office.Core.MsoThemeColorIndex ChartColor { get;set; }
+            public  Excel.XlRgbColor fontColor { get; set; }
+            public  string DataSymbol { get; set; }
 
             public Excel.Worksheet WorkSheet;
 
-            public ExcelChart(Excel.Worksheet XLWorkSheet)
-            {
-                WorkSheet = XLWorkSheet;
-            }
+            //public ExcelChart(Excel.Worksheet XLWorkSheet)
+            //{
+            //    WorkSheet = XLWorkSheet;
 
-            public void CreateChart(string outPutName, string outPutFolder )
+
+            //}
+            public void CreateChart(string outPutName, string outPutFolder)
             {
+                WorkSheet.Activate();
                 Excel.ChartObjects chartObjects = (Excel.ChartObjects)WorkSheet.ChartObjects();
                 Excel.ChartObject scatterChartObject = chartObjects.Add(Left,Top, Width, Height);
                 Excel.Chart CustomChart = scatterChartObject.Chart;
                 CustomChart.ChartType = ChartType;
+
 
                 if (ChartType == XlChartType.xlXYScatter)
                 {
@@ -117,6 +120,8 @@ namespace TestMap
 
                     }
                 }
+
+                //CustomChart.Activate();
                 CustomChart.HasTitle = true;
 
                 CustomChart.ChartTitle.Text = ChartTitle;
@@ -147,8 +152,8 @@ namespace TestMap
                         datalabel.NumberFormat = "0" + DataSymbol;
                     }
                 }
-
-                CustomChart.Export(outPutFolder + @"\" + outPutName, "PNG");
+             
+                CustomChart.Export(outPutFolder + @"\" + outPutName,"PNG");
 
             }
 
@@ -177,16 +182,22 @@ namespace TestMap
             }
         }
 
-        public  void releaseObject(object obj)
+        public  void releaseObject()
         {
             try
             {
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(obj);
-                obj = null;
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(xlWorkSheet);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(xlWorkBook);
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
+                xlWorkSheet = null;
+                xlWorkBook = null;
+                xlApp = null;
             }
             catch (Exception ex)
             {
-                obj = null;
+                xlWorkSheet = null;
+                xlWorkBook = null;
+                xlApp = null;
                 Console.WriteLine("Unable to release the Object " + ex.ToString());
             }
             finally

@@ -12,9 +12,9 @@ namespace TestMap
 {
     public class IFword
     {
-        WORD.Application wordApp;
+        public WORD.Application wordApp;
 
-        Document document;
+        public Document document;
 
         public string WordReportName { get; set; }
 
@@ -27,7 +27,7 @@ namespace TestMap
         public IFword(string DocLocation)
         {
             wordApp = new WORD.Application();
-            Document document = wordApp.Documents.Open(DocLocation);
+            document = wordApp.Documents.Open(DocLocation);
         }
 
         public void InsertImage(string FindText, string ImageLocation )
