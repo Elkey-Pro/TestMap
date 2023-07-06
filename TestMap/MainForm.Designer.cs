@@ -49,6 +49,10 @@
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dGVDataWFromXl = new System.Windows.Forms.DataGridView();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txt_docxTemp = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txt_UserName = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -74,6 +78,10 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.txt_UserName);
+            this.tabPage1.Controls.Add(this.label2);
+            this.tabPage1.Controls.Add(this.txt_docxTemp);
+            this.tabPage1.Controls.Add(this.label1);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Controls.Add(this.button4);
             this.tabPage1.Controls.Add(this.label10);
@@ -183,7 +191,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(9, 39);
+            this.label9.Location = new System.Drawing.Point(8, 66);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(93, 13);
             this.label9.TabIndex = 30;
@@ -207,7 +215,7 @@
             // 
             // txt_DocxOutPutPath
             // 
-            this.txt_DocxOutPutPath.Location = new System.Drawing.Point(108, 36);
+            this.txt_DocxOutPutPath.Location = new System.Drawing.Point(107, 63);
             this.txt_DocxOutPutPath.Name = "txt_DocxOutPutPath";
             this.txt_DocxOutPutPath.Size = new System.Drawing.Size(111, 20);
             this.txt_DocxOutPutPath.TabIndex = 27;
@@ -268,6 +276,39 @@
             this.dGVDataWFromXl.Size = new System.Drawing.Size(357, 438);
             this.dGVDataWFromXl.TabIndex = 0;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 39);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(84, 13);
+            this.label1.TabIndex = 38;
+            this.label1.Text = "Doc temp Name";
+            // 
+            // txt_docxTemp
+            // 
+            this.txt_docxTemp.Location = new System.Drawing.Point(107, 36);
+            this.txt_docxTemp.Name = "txt_docxTemp";
+            this.txt_docxTemp.Size = new System.Drawing.Size(112, 20);
+            this.txt_docxTemp.TabIndex = 39;
+            this.txt_docxTemp.Text = "RV Rental Tampa Report-v0.3.docx";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(9, 90);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(57, 13);
+            this.label2.TabIndex = 40;
+            this.label2.Text = "UserName";
+            // 
+            // txt_UserName
+            // 
+            this.txt_UserName.Location = new System.Drawing.Point(107, 87);
+            this.txt_UserName.Name = "txt_UserName";
+            this.txt_UserName.Size = new System.Drawing.Size(111, 20);
+            this.txt_UserName.TabIndex = 41;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -276,7 +317,7 @@
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "Auto Report";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -310,6 +351,10 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.GroupBox groupBox1;
         private GMap.NET.WindowsForms.GMapControl gmap;
+        private System.Windows.Forms.TextBox txt_UserName;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txt_docxTemp;
+        private System.Windows.Forms.Label label1;
     }
 }
 

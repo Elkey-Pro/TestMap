@@ -33,10 +33,10 @@ namespace TestMap
             InitializeComponent();
         }
         // for old script
-        static string Word_Report_Name = "RV Rental Tampa Report-v0.2.docx";
+        //static string Word_Report_Name = "RV Rental Tampa Report-v0.2.docx";
         static string xlsx_output = Environment.CurrentDirectory + @"\XLSX_OUTPUT";
         static string Logo_path = Environment.CurrentDirectory + @"\No-Backgrounds";
-        static string Word_report_template_file = Environment.CurrentDirectory + @"\template" + @"\RV Rental Tampa Report-v0.2.docx";
+        string Word_report_template_file = Environment.CurrentDirectory + @"\template" + @"\" ;
         static string Word_output = Environment.CurrentDirectory + @"\WORD_OUTPUT";
         static string img_temp = Environment.CurrentDirectory + @"\temp_image";
         static object misValue = System.Reflection.Missing.Value;
@@ -60,6 +60,7 @@ namespace TestMap
         {
             txt_xlsxPath.Text = Environment.CurrentDirectory +  @"\XLSX_OUTPUT" ;
             txt_DocxOutPutPath.Text = Environment.CurrentDirectory + @"\WORD_OUTPUT";
+            Word_report_template_file = Word_report_template_file + txt_docxTemp.Text;
             // load data.xml to datatable & gridview
             DataForWordReport.Columns.Add("FindString");
             DataForWordReport.Columns.Add("Row");
@@ -385,12 +386,14 @@ namespace TestMap
                         ReadExcel(file);
                 }
 
-                WriteLog(" All Done !");
+               
             }
             catch(Exception ex)
             {
                 WriteLog(ex.ToString());
             }
+
+            WriteLog("All Done!");
 
         }
 
@@ -712,15 +715,21 @@ namespace TestMap
 
                     WriteLog(" get List top 5 Maker");
                     // get list_of top5 maker
+                    //List<string> Top5MakerandModel = Data.AsEnumerable().Take(5)
+                    //                                        .Select(row => row.Field<string>("MAKE") + " - Length : " + row.Field<Double>("LENGTH").ToString())
+                    //                                        .Distinct()
+                                                            //.ToList();
                     List<string> Top5MakerandModel = Data.AsEnumerable().Take(5)
-                                                            .Select(row => row.Field<string>("MAKE") + " - Length : " + row.Field<Double>("LENGTH").ToString())
-                                                            .Distinct()
-                                                            .ToList();
-
+                                        .Select((row,Index) => (Index + 1).ToString() + "."  +  row.Field<string>("MAKE") )
+                                        .Distinct()
+                                        .ToList();
 
                     DataRow dtrow = DataForWordReport.NewRow();
 
                     WriteLog("Adding Data from Stat sheet to data table");
+
+                    // add User Name
+                    DataForWordReport.Rows.Add("<USER_NAME>", txt_UserName.Text);
 
                     // add city Name
                     DataForWordReport.Rows.Add("<CITY_LIST>", CityName);
@@ -785,8 +794,23 @@ namespace TestMap
                     //  Potential Annual
                     DataForWordReport.Rows.Add("<POTENTIAL_ANNUAL>", xlWorkSheet.Cells[22, 2].Value);
 
+                    //  Average nightly price of top 5 RVs
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5>", xlWorkSheet.Cells[9, 2].Value);
+
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_025>",  xlWorkSheet.Cells[9, 2].Value * 0.25 );
+
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_026>", xlWorkSheet.Cells[9, 2].Value * 0.26 );
+
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_050>", xlWorkSheet.Cells[9, 2].Value * 0.5 );
+
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_051>", xlWorkSheet.Cells[9, 2].Value * 0.51);
+
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_075>", xlWorkSheet.Cells[9, 2].Value * 0.75);
+
+
+
                     #endregion
-                   
+
 
                     DataForWordReport.WriteXml("data.xml");
 
@@ -861,12 +885,12 @@ namespace TestMap
                     avg_daily_pricenight.Columns.Add("TYPE", typeof(string));
                     avg_daily_pricenight.Columns.Add("VALUE", typeof(double));
 
-                    string type = FullData.Columns[8].DataType.ToString();
+                    //string type = FullData.Columns[8].DataType.ToString();
 
-                    decimal avgtop5 = FullData.AsEnumerable().Take(5).Average(row => row.Field<decimal>("PRICE/NIGHT"));
+                    decimal avgtop5 = Data.AsEnumerable().Take(5).Average(row => row.Field<decimal>("PRICE/NIGHT"));
 
-                    decimal avgtop25 = FullData.AsEnumerable().Take(25).Average(row => row.Field<decimal>("PRICE/NIGHT"));
-                    decimal avgAll = FullData.AsEnumerable().Average(row => row.Field<decimal>("PRICE/NIGHT"));
+                    decimal avgtop25 = Data.AsEnumerable().Take(25).Average(row => row.Field<decimal>("PRICE/NIGHT"));
+                    decimal avgAll = Data.AsEnumerable().Average(row => row.Field<decimal>("PRICE/NIGHT"));
 
                     avg_daily_pricenight.Rows.Add("TOP 5", (int)Math.Round(avgtop5));
                     avg_daily_pricenight.Rows.Add("TOP 25", (int)Math.Round(avgtop25));
