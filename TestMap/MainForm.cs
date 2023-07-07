@@ -14,7 +14,7 @@ using GMap;
 using GMap.NET.WindowsForms;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Word;
-using static TestMap.IFexcel;
+using static RvAutoReport.IFexcel;
 using Action = System.Action;
 using DataTable = System.Data.DataTable;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -23,8 +23,9 @@ using WORD = Microsoft.Office.Interop.Word;
 using System.Threading;
 using GMap.NET;
 using Task = System.Threading.Tasks.Task;
+using System.Xml.Linq;
 
-namespace TestMap
+namespace RvAutoReport
 {
     public partial class MainForm : Form
     {
@@ -51,7 +52,7 @@ namespace TestMap
         static List<string> list_image_url = new List<string>();
 
         //  for new version
-        public string ExcelPath = @"C:\Personal\TDQ\PJ\FREEL\cefSharpTest\Insert Image\Insert Image\bin\x86\Debug\XLSX_OUTPUT\FL-Miami-6-7-23-1023AM.xlsx";
+        //public string ExcelPath = @"";
         public DataTable Excel_data;
         //public List<string> list_image_url = new List<string>();
         DataTable DataForWordReport = new DataTable (){ TableName  = "DataForWOrdReport" };
@@ -368,7 +369,7 @@ namespace TestMap
         }
 
         #region Copy From preview Script
-        private void button4_Click(object sender, EventArgs e)
+        private  void button4_Click(object sender, EventArgs e)
         {
             txt_log.Clear();
             WriteLog("Kill Excel , Word instance");
@@ -399,72 +400,77 @@ namespace TestMap
 
         private  void CreateCityMap(DataTable RvData)
         {
-            this.Invoke(new MethodInvoker(delegate ()
+
+            if(RvData.Rows.Count > 0)
             {
-                gmap.MaxZoom = 18;
-                gmap.MinZoom = 2;
-                gmap.Zoom = 8;
-                gmap.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
-                GMap.NET.GMaps.Instance.Mode = GMap.NET.AccessMode.ServerOnly;
-                
-
-                DataTable LatLongData = new DataTable();
-                LatLongData.Columns.Add("LAT", typeof(double));
-                LatLongData.Columns.Add("LONG", typeof(double));
-
-                foreach (DataRow dtrow in RvData.Rows)
+                this.Invoke(new MethodInvoker(delegate ()
                 {
-                    double Lat = (double)dtrow["LATITUDE"];
-                    double Long = (double)dtrow["LONGITUDE"];
-                    LatLongData.Rows.Add(Lat, Long);
+                    gmap.MaxZoom = 18;
+                    gmap.MinZoom = 2;
+                    gmap.Zoom = 8;
+                    gmap.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
+                    GMap.NET.GMaps.Instance.Mode = GMap.NET.AccessMode.ServerOnly;
+
+
+                    DataTable LatLongData = new DataTable();
+                    LatLongData.Columns.Add("LAT", typeof(double));
+                    LatLongData.Columns.Add("LONG", typeof(double));
+
+                    foreach (DataRow dtrow in RvData.Rows)
+                    {
+                        double Lat = (double)dtrow["LATITUDE"];
+                        double Long = (double)dtrow["LONGITUDE"];
+                        LatLongData.Rows.Add(Lat, Long);
+                    }
+
+                    // avg lat long
+                    double AvgLat = LatLongData.AsEnumerable().Average(row => row.Field<double>("LAT"));
+                    double AvgLong = LatLongData.AsEnumerable().Average(row => row.Field<double>("LONG"));
+
+
+                    int numberOfPoints = 100;
+                    double radiusInMeters = 50000;
+
+
+                    foreach (DataRow dtrow in LatLongData.Rows)
+                    {
+                        GMap.NET.WindowsForms.GMapOverlay markers = new GMap.NET.WindowsForms.GMapOverlay("markers");
+                        GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
+                                                                        new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
+                                                                                    GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
+                        markers.Markers.Add(marker);
+                        gmap.Overlays.Add(markers);
+
+                    }
+                    List<GMap.NET.PointLatLng> circlePoints = new List<GMap.NET.PointLatLng>();
+                    double angle = 2 * Math.PI / numberOfPoints;
+                    for (int i = 0; i < numberOfPoints; i++)
+                    {
+                        double lat = AvgLat + radiusInMeters / 111320d * Math.Sin(i * angle);
+                        double lng = AvgLong + radiusInMeters / (111320d * Math.Cos(AvgLat * Math.PI / 180)) * Math.Cos(i * angle);
+                        circlePoints.Add(new GMap.NET.PointLatLng(lat, lng));
+                    }
+
+                    GMap.NET.WindowsForms.GMapOverlay Overlay = new GMap.NET.WindowsForms.GMapOverlay("Overlay");
+                    GMap.NET.WindowsForms.GMapPolygon circle = new GMap.NET.WindowsForms.GMapPolygon(circlePoints, "circle");
+
+                    circle.Fill = new SolidBrush(Color.FromArgb(30, Color.Blue));  // Fill color
+                    circle.Stroke = new Pen(Color.Blue, 1);
+
+                    Overlay.Polygons.Add(circle);
+
+                    // Create a GMapMarker for the center
+
+                    // Add the marker to the overlay
+
+                    gmap.Position = new GMap.NET.PointLatLng(AvgLat, AvgLong);
+
+                    gmap.Overlays.Add(Overlay);
                 }
-
-                // avg lat long
-                double AvgLat = LatLongData.AsEnumerable().Average(row => row.Field<double>("LAT"));
-                double AvgLong = LatLongData.AsEnumerable().Average(row => row.Field<double>("LONG"));
-
-
-                int numberOfPoints = 100;
-                double radiusInMeters = 50000;
-
-
-                foreach (DataRow dtrow in LatLongData.Rows)
-                {
-                    GMap.NET.WindowsForms.GMapOverlay markers = new GMap.NET.WindowsForms.GMapOverlay("markers");
-                    GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
-                                                                    new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
-                                                                                GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
-                    markers.Markers.Add(marker);
-                    gmap.Overlays.Add(markers);
-
-                }
-                List<GMap.NET.PointLatLng> circlePoints = new List<GMap.NET.PointLatLng>();
-                double angle = 2 * Math.PI / numberOfPoints;
-                for (int i = 0; i < numberOfPoints; i++)
-                {
-                    double lat = AvgLat + radiusInMeters / 111320d * Math.Sin(i * angle);
-                    double lng = AvgLong + radiusInMeters / (111320d * Math.Cos(AvgLat * Math.PI / 180)) * Math.Cos(i * angle);
-                    circlePoints.Add(new GMap.NET.PointLatLng(lat, lng));
-                }
-
-                GMap.NET.WindowsForms.GMapOverlay Overlay = new GMap.NET.WindowsForms.GMapOverlay("Overlay");
-                GMap.NET.WindowsForms.GMapPolygon circle = new GMap.NET.WindowsForms.GMapPolygon(circlePoints, "circle");
-
-                circle.Fill = new SolidBrush(Color.FromArgb(30, Color.Blue));  // Fill color
-                circle.Stroke = new Pen(Color.Blue, 1);
-
-                Overlay.Polygons.Add(circle);
-
-                // Create a GMapMarker for the center
-
-                // Add the marker to the overlay
-
-                gmap.Position = new GMap.NET.PointLatLng(AvgLat, AvgLong);
-
-                gmap.Overlays.Add(Overlay);
-            }
             ));
+            }
 
+          
 
 
 
@@ -576,7 +582,7 @@ namespace TestMap
 
         }
 
-        private   async void ReadExcel(string ExcelPath)
+        private async  void ReadExcel(string ExcelPath)
         { 
             Excel.Application xlApp;
             Excel.Workbook xlWorkBook;
@@ -687,26 +693,45 @@ namespace TestMap
                     Data = Data.DefaultView.ToTable();
                     WriteLog("Sorting"  + RvType + " Data");
 
-                    WriteLog("Creating Map");
+                   
 
-                    Task CreateMap =  Task.Factory.StartNew(() =>
-                    CreateCityMap(Data)
-                    );
-                    await CreateMap;
 
-                    Thread.Sleep(2000);
+                    // check if lat & long data is empty or not
+                    DataTable RvData = new DataTable();
+                    var checkifemptydata = Data.AsEnumerable()
+                    .Where(row => !row.IsNull("LATITUDE") && !row.IsNull("LONGITUDE"));
 
-                    // export map image
-                    Image Mapimage = gmap.ToImage();
-                    string ImagePath = FolderPath + url_cityMap;
-                    Mapimage.Save(ImagePath);
-                    Mapimage.Dispose();
-
-                    foreach(GMapOverlay overlay in gmap.Overlays.ToList() )
+                    if(checkifemptydata.Any())
                     {
-                        gmap.Overlays.Remove(overlay);
+                        RvData = checkifemptydata.CopyToDataTable();
                     }
-                    WriteLog("Map image exported");
+
+
+                    if (RvData.Rows.Count > 0)
+                    {
+                        WriteLog("Creating Map");
+                        Task CreateMap = Task.Factory.StartNew(() => CreateCityMap(RvData));
+                        await CreateMap;
+                        Thread.Sleep(2000);
+                        // export map image
+                        Image Mapimage = gmap.ToImage();
+                        string ImagePath = FolderPath + url_cityMap;
+                        Mapimage.Save(ImagePath);
+                        Mapimage.Dispose();
+
+                        foreach (GMapOverlay overlay in gmap.Overlays.ToList())
+                        {
+                            gmap.Overlays.Remove(overlay);
+                        }
+                        WriteLog("Map image exported");
+                    }
+                    else
+                    {
+                        WriteLog("missing lat & long data");
+                    }
+                   
+
+
 
 
                     DataTable DataForWordReport = new DataTable("DataForWOrdReport");
@@ -719,10 +744,14 @@ namespace TestMap
                     //                                        .Select(row => row.Field<string>("MAKE") + " - Length : " + row.Field<Double>("LENGTH").ToString())
                     //                                        .Distinct()
                                                             //.ToList();
-                    List<string> Top5MakerandModel = Data.AsEnumerable().Take(5)
-                                        .Select((row,Index) => (Index + 1).ToString() + "."  +  row.Field<string>("MAKE") )
-                                        .Distinct()
+                    List<string> Top5MakerandModel = Data.AsEnumerable()
+                                        .Select((row) =>  row.Field<string>("MAKE") )
+                                        .Distinct().Take(5)
                                         .ToList();
+                    for(int i  = 0; i < Top5MakerandModel.Count; i++ )
+                    {
+                        Top5MakerandModel[i] = (i +1).ToString() +". " + Top5MakerandModel[i];
+                    }
 
                     DataRow dtrow = DataForWordReport.NewRow();
 
@@ -756,6 +785,9 @@ namespace TestMap
 
                     //add Average Age of the Top 25 Class 
                     DataForWordReport.Rows.Add("<TOP25_AVG_RV_AGE>", xlWorkSheet.Cells[6, 2].Value);
+
+                    //add Average length of the Top 25 Class 
+                    DataForWordReport.Rows.Add("<TOP25_AVG_RV_LENGTH>", xlWorkSheet.Cells[7, 2].Value);
 
                     //Average Utilization In Season (May 1 to Oct 31) Top 5
 
@@ -795,17 +827,25 @@ namespace TestMap
                     DataForWordReport.Rows.Add("<POTENTIAL_ANNUAL>", xlWorkSheet.Cells[22, 2].Value);
 
                     //  Average nightly price of top 5 RVs
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5>", xlWorkSheet.Cells[9, 2].Value);
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_025>",  xlWorkSheet.Cells[9, 2].Value * 0.25 );
+                    double AvgTop5NightlyPrice = xlWorkSheet.Cells[9, 2].Value;
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_026>", xlWorkSheet.Cells[9, 2].Value * 0.26 );
+                    
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5>", AvgTop5NightlyPrice);
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_050>", xlWorkSheet.Cells[9, 2].Value * 0.5 );
+                    //  Average nightly price calculation for last table
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_051>", xlWorkSheet.Cells[9, 2].Value * 0.51);
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_025>", Math.Round(AvgTop5NightlyPrice * ( 0.25 * 365 ) ));
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_075>", xlWorkSheet.Cells[9, 2].Value * 0.75);
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_026>", Math.Round(AvgTop5NightlyPrice *  (0.26 * 365) ));
+
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_050>", Math.Round(AvgTop5NightlyPrice * ( 0.5 * 365 ) ));
+
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_051>", Math.Round(AvgTop5NightlyPrice * ( 0.51 * 365 )));
+
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_075>", Math.Round(AvgTop5NightlyPrice * ( 0.75 * 365 )));
+
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_100>", Math.Round(AvgTop5NightlyPrice * 365 ) );
 
 
 
@@ -1136,8 +1176,18 @@ namespace TestMap
 
 
             string TargetSave_CityMap = Imgsavefolder + url_cityMap;
-            Insert_Image_Chart("<CITY_MAP>", document, wordApp, TargetSave_CityMap);
-            WriteLog("Inserted City Map");
+            // 
+            if(File.Exists(TargetSave_CityMap)) // case map is existing
+            {
+                Insert_Image_Chart("<CITY_MAP>", document, wordApp, TargetSave_CityMap);
+                WriteLog("Inserted City Map");
+            }
+            else // if can't find map then just remove the target text
+            {
+                WriteLog("There is no map");
+                Replace_string("<CITY_MAP>", "", wordApp);
+            }
+
 
 
             // insert total Rv type Count Chart
@@ -1354,6 +1404,21 @@ namespace TestMap
         private void label10_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void btn_clearLog_Click(object sender, EventArgs e)
+        {
+            txt_log.Clear();
+        }
+
+        private void btn_openOutPut_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", txt_DocxOutPutPath.Text);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // should put the power automate here
         }
     }
 }

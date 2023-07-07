@@ -1,4 +1,4 @@
-﻿namespace TestMap
+﻿namespace RvAutoReport
 {
     partial class MainForm
     {
@@ -32,6 +32,10 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.txt_UserName = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txt_docxTemp = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.gmap = new GMap.NET.WindowsForms.GMapControl();
             this.button4 = new System.Windows.Forms.Button();
@@ -49,10 +53,8 @@
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dGVDataWFromXl = new System.Windows.Forms.DataGridView();
-            this.label1 = new System.Windows.Forms.Label();
-            this.txt_docxTemp = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txt_UserName = new System.Windows.Forms.TextBox();
+            this.btn_clearLog = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -78,6 +80,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button1);
+            this.tabPage1.Controls.Add(this.btn_clearLog);
             this.tabPage1.Controls.Add(this.txt_UserName);
             this.tabPage1.Controls.Add(this.label2);
             this.tabPage1.Controls.Add(this.txt_docxTemp);
@@ -99,6 +103,39 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Main";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // txt_UserName
+            // 
+            this.txt_UserName.Location = new System.Drawing.Point(107, 87);
+            this.txt_UserName.Name = "txt_UserName";
+            this.txt_UserName.Size = new System.Drawing.Size(111, 20);
+            this.txt_UserName.TabIndex = 41;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(9, 90);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(57, 13);
+            this.label2.TabIndex = 40;
+            this.label2.Text = "UserName";
+            // 
+            // txt_docxTemp
+            // 
+            this.txt_docxTemp.Location = new System.Drawing.Point(107, 36);
+            this.txt_docxTemp.Name = "txt_docxTemp";
+            this.txt_docxTemp.Size = new System.Drawing.Size(112, 20);
+            this.txt_docxTemp.TabIndex = 39;
+            this.txt_docxTemp.Text = "RV Rental Tampa Report-v0.3.docx";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 39);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(84, 13);
+            this.label1.TabIndex = 38;
+            this.label1.Text = "Doc temp Name";
             // 
             // groupBox1
             // 
@@ -140,9 +177,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(99, 111);
+            this.button4.Location = new System.Drawing.Point(107, 111);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(120, 44);
+            this.button4.Size = new System.Drawing.Size(112, 44);
             this.button4.TabIndex = 28;
             this.button4.Text = "Run Report2";
             this.button4.UseVisualStyleBackColor = true;
@@ -166,6 +203,7 @@
             this.btn_openOutPut.TabIndex = 33;
             this.btn_openOutPut.Text = "Open OutPut Folder";
             this.btn_openOutPut.UseVisualStyleBackColor = true;
+            this.btn_openOutPut.Click += new System.EventHandler(this.btn_openOutPut_Click);
             // 
             // txt_log
             // 
@@ -173,15 +211,16 @@
             this.txt_log.Location = new System.Drawing.Point(12, 204);
             this.txt_log.Multiline = true;
             this.txt_log.Name = "txt_log";
+            this.txt_log.ReadOnly = true;
             this.txt_log.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txt_log.Size = new System.Drawing.Size(207, 231);
             this.txt_log.TabIndex = 32;
             // 
             // btn_MakeReport
             // 
-            this.btn_MakeReport.Location = new System.Drawing.Point(99, 161);
+            this.btn_MakeReport.Location = new System.Drawing.Point(107, 161);
             this.btn_MakeReport.Name = "btn_MakeReport";
-            this.btn_MakeReport.Size = new System.Drawing.Size(120, 37);
+            this.btn_MakeReport.Size = new System.Drawing.Size(112, 37);
             this.btn_MakeReport.TabIndex = 31;
             this.btn_MakeReport.Text = "Run Report";
             this.btn_MakeReport.UseVisualStyleBackColor = true;
@@ -276,38 +315,25 @@
             this.dGVDataWFromXl.Size = new System.Drawing.Size(357, 438);
             this.dGVDataWFromXl.TabIndex = 0;
             // 
-            // label1
+            // btn_clearLog
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 39);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(84, 13);
-            this.label1.TabIndex = 38;
-            this.label1.Text = "Doc temp Name";
+            this.btn_clearLog.Location = new System.Drawing.Point(11, 441);
+            this.btn_clearLog.Name = "btn_clearLog";
+            this.btn_clearLog.Size = new System.Drawing.Size(75, 23);
+            this.btn_clearLog.TabIndex = 18;
+            this.btn_clearLog.Text = "ClearLog";
+            this.btn_clearLog.UseVisualStyleBackColor = true;
+            this.btn_clearLog.Click += new System.EventHandler(this.btn_clearLog_Click);
             // 
-            // txt_docxTemp
+            // button1
             // 
-            this.txt_docxTemp.Location = new System.Drawing.Point(107, 36);
-            this.txt_docxTemp.Name = "txt_docxTemp";
-            this.txt_docxTemp.Size = new System.Drawing.Size(112, 20);
-            this.txt_docxTemp.TabIndex = 39;
-            this.txt_docxTemp.Text = "RV Rental Tampa Report-v0.3.docx";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 90);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(57, 13);
-            this.label2.TabIndex = 40;
-            this.label2.Text = "UserName";
-            // 
-            // txt_UserName
-            // 
-            this.txt_UserName.Location = new System.Drawing.Point(107, 87);
-            this.txt_UserName.Name = "txt_UserName";
-            this.txt_UserName.Size = new System.Drawing.Size(111, 20);
-            this.txt_UserName.TabIndex = 41;
+            this.button1.Location = new System.Drawing.Point(8, 111);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 44);
+            this.button1.TabIndex = 42;
+            this.button1.Text = "Run Report1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // MainForm
             // 
@@ -355,6 +381,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txt_docxTemp;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btn_clearLog;
+        private System.Windows.Forms.Button button1;
     }
 }
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using WORD = Microsoft.Office.Interop.Word;
 
-namespace TestMap
+namespace RvAutoReport
 {
     public class IFword
     {

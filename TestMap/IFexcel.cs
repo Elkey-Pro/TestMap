@@ -13,7 +13,7 @@ using Microsoft.Office.Core;
 using XlChartType = Microsoft.Office.Interop.Excel.XlChartType;
 using System.Drawing;
 
-namespace TestMap
+namespace RvAutoReport
 {
     public class IFexcel
     {

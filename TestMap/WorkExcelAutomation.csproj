@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{18C14C12-7F29-41D8-AA19-1A7D20333027}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>TestMap</RootNamespace>
-    <AssemblyName>TestMap</AssemblyName>
+    <RootNamespace>RvAutoReport</RootNamespace>
+    <AssemblyName>RvAutoReport</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -136,6 +136,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
