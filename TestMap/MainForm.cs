@@ -63,12 +63,12 @@ namespace RvAutoReport
             txt_DocxOutPutPath.Text = Environment.CurrentDirectory + @"\WORD_OUTPUT";
             Word_report_template_file = Word_report_template_file + txt_docxTemp.Text;
             // load data.xml to datatable & gridview
-            DataForWordReport.Columns.Add("FindString");
-            DataForWordReport.Columns.Add("Row");
-            DataForWordReport.Columns.Add("Column");
-            DataForWordReport.Columns.Add("Type");
-            DataForWordReport.ReadXml(DataXmlPath);
-            dGVDataWFromXl.DataSource = DataForWordReport;
+            //DataForWordReport.Columns.Add("FindString");
+            //DataForWordReport.Columns.Add("Row");
+            //DataForWordReport.Columns.Add("Column");
+            //DataForWordReport.Columns.Add("Type");
+            //DataForWordReport.ReadXml(DataXmlPath);
+            //dGVDataWFromXl.DataSource = DataForWordReport;
 
         }
 
@@ -710,9 +710,11 @@ namespace RvAutoReport
                     if (RvData.Rows.Count > 0)
                     {
                         WriteLog("Creating Map");
-                        Task CreateMap = Task.Factory.StartNew(() => CreateCityMap(RvData));
-                        await CreateMap;
-                        Thread.Sleep(2000);
+                        //Task CreateMap = Task.Factory.StartNew(() => CreateCityMap(RvData));
+                        //await CreateMap;
+                        //Thread.Sleep(2000);
+
+                        CreateCityMap(RvData);
                         // export map image
                         Image Mapimage = gmap.ToImage();
                         string ImagePath = FolderPath + url_cityMap;
@@ -776,7 +778,11 @@ namespace RvAutoReport
                     DataForWordReport.Rows.Add("<TOTAL_RV_TYPE>", Data.Rows.Count);
 
 
+
                     #region Load data from excel
+
+                    xlWorkSheet.Activate();
+
                     // add Average Age of all RVs
                     DataForWordReport.Rows.Add("<ALL_AVG_RV_AGE>", xlWorkSheet.Cells[4, 2].Value);
 
@@ -786,8 +792,8 @@ namespace RvAutoReport
                     //add Average Age of the Top 25 Class 
                     DataForWordReport.Rows.Add("<TOP25_AVG_RV_AGE>", xlWorkSheet.Cells[6, 2].Value);
 
-                    //add Average length of the Top 25 Class 
-                    DataForWordReport.Rows.Add("<TOP25_AVG_RV_LENGTH>", xlWorkSheet.Cells[7, 2].Value);
+                    //add Average length of the Top 5 Class 
+                    DataForWordReport.Rows.Add("<TOP5_AVG_RV_LENGTH>", xlWorkSheet.Cells[7, 2].Value);
 
                     //Average Utilization In Season (May 1 to Oct 31) Top 5
 
@@ -839,11 +845,13 @@ namespace RvAutoReport
 
                     DataForWordReport.Rows.Add("<AVG_NP_TOP5_026>", Math.Round(AvgTop5NightlyPrice *  (0.26 * 365) ));
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_050>", Math.Round(AvgTop5NightlyPrice * ( 0.5 * 365 ) ));
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_050>", Math.Round(AvgTop5NightlyPrice * ( 0.50 * 365 ) ));
 
                     DataForWordReport.Rows.Add("<AVG_NP_TOP5_051>", Math.Round(AvgTop5NightlyPrice * ( 0.51 * 365 )));
 
                     DataForWordReport.Rows.Add("<AVG_NP_TOP5_075>", Math.Round(AvgTop5NightlyPrice * ( 0.75 * 365 )));
+
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_076>", Math.Round(AvgTop5NightlyPrice * (0.76 * 365)));
 
                     DataForWordReport.Rows.Add("<AVG_NP_TOP5_100>", Math.Round(AvgTop5NightlyPrice * 365 ) );
 
@@ -998,32 +1006,32 @@ namespace RvAutoReport
 
                     #region price/night scratchart
 
-                    // cal top 25 price /night by type
+                    // cal top 5 price /night by type
 
-                    DataRow[] filteredRows = Data.AsEnumerable().Where(rn => rn.Field<double>("YEAR") > 0).Take(25).ToArray();
+                    DataRow[] filteredRows = Data.AsEnumerable().Where(rn => rn.Field<double>("YEAR") > 0).Take(5).ToArray();
 
-                    DataTable ds_top25_pricenight = new DataTable();
-                    ds_top25_pricenight.Columns.Add("PRICE/NIGHT", typeof(string));
-                    ds_top25_pricenight.Columns.Add("YEAR", typeof(string));
-                    ds_top25_pricenight.Columns.Add("NAME", typeof(string));
+                    DataTable ds_top5_pricenight = new DataTable();
+                    ds_top5_pricenight.Columns.Add("PRICE/NIGHT", typeof(string));
+                    ds_top5_pricenight.Columns.Add("YEAR", typeof(string));
+                    ds_top5_pricenight.Columns.Add("NAME", typeof(string));
 
                     foreach (DataRow row in filteredRows)
                     {
-                        ds_top25_pricenight.Rows.Add(row["NAME"], row["YEAR"], row["PRICE/NIGHT"]);
+                        ds_top5_pricenight.Rows.Add(row["NAME"], row["YEAR"], row["PRICE/NIGHT"]);
                     }
 
                     // read all sheet calculated data
-                    DataTable CurremtSheetCalculcatedData = new DataTable();
-                    CurremtSheetCalculcatedData.Columns.Add("TYPE");
-                    CurremtSheetCalculcatedData.Columns.Add("VALUE");
+                    //DataTable CurremtSheetCalculcatedData = new DataTable();
+                    //CurremtSheetCalculcatedData.Columns.Add("TYPE");
+                    //CurremtSheetCalculcatedData.Columns.Add("VALUE");
 
-                    for (int i = 1; i <= 22; i++)
-                    {
-                        DataRow dtrow1 = CurremtSheetCalculcatedData.NewRow();
-                        dtrow1["TYPE"] = xlWorkSheet.Cells[i, 1].Value;
-                        dtrow1["VALUE"] = xlWorkSheet.Cells[i, 2].Value;
-                        CurremtSheetCalculcatedData.Rows.Add(dtrow1);
-                    }
+                    //for (int i = 1; i <= 22; i++)
+                    //{
+                    //    DataRow dtrow1 = CurremtSheetCalculcatedData.NewRow();
+                    //    dtrow1["TYPE"] = xlWorkSheet.Cells[i, 1].Value;
+                    //    dtrow1["VALUE"] = xlWorkSheet.Cells[i, 2].Value;
+                    //    CurremtSheetCalculcatedData.Rows.Add(dtrow1);
+                    //}
 
                     //write header to cell
                     xlWorkSheet.Cells[1, 25].Value = "NAME";
@@ -1032,16 +1040,16 @@ namespace RvAutoReport
 
                     // insert price/night data set to excel
 
-                    for (int i = 0; i < ds_top25_pricenight.Rows.Count; i++)
+                    for (int i = 0; i < ds_top5_pricenight.Rows.Count; i++)
                     {
                         for (int j = 0; j < 3; j++)
                         {
-                            xlWorkSheet.Cells[i + 2, j + 25].Value = ds_top25_pricenight.Rows[i].Field<string>(j);
+                            xlWorkSheet.Cells[i + 2, j + 25].Value = ds_top5_pricenight.Rows[i].Field<string>(j);
                         }
                     }
                     // insert price/night chart to excel
 
-                    Insert_chart(xlWorkSheet, "Z", "AA", (1 + ds_top25_pricenight.Rows.Count), "Top 25 RV PRICE / NIGHT"
+                    Insert_chart(xlWorkSheet, "Z", "AA", (1 + ds_top5_pricenight.Rows.Count), "Top 25 RV PRICE / NIGHT"
                         , "PRICE/NIGHT", XlChartType.xlXYScatter, 5, 350, 800, 300, FolderPath, url_PriceNight, Office.MsoThemeColorIndex.msoThemeColorAccent1, Color.White, Excel.XlRgbColor.rgbWhite, "", true);
 
                     WriteLog("Created Chart for  Top 25 RV PRICE / NIGHT ");
@@ -1102,12 +1110,12 @@ namespace RvAutoReport
             xlWorkBook.Close(true, misValue, misValue);
             xlApp.Quit();
             //add some text 
-
-            releaseObject(xlApp);
             releaseObject(xlWorkBook);
+            releaseObject(xlApp);
+       
 
             WriteLog("Saved Excel Work book");
-
+            KillWordAndExcelProcesses();
         }
 
         private static DataTable ReadExcelFile(string sheetName, string path)
@@ -1235,8 +1243,12 @@ namespace RvAutoReport
             // clear image for next run
 
             WriteLog("Docx saved at :" + docsaveLocation);
-
-            Directory.Delete(img_temp, true);
+            string[] Img_file = Directory.GetDirectories(img_temp);
+            foreach(string file in Img_file)
+            {
+               Directory.Delete(file, true);
+            }
+   
 
             WriteLog("Clean template Image");
 
