@@ -32,6 +32,8 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.btn_clearLog = new System.Windows.Forms.Button();
             this.txt_UserName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txt_docxTemp = new System.Windows.Forms.TextBox();
@@ -42,7 +44,6 @@
             this.label10 = new System.Windows.Forms.Label();
             this.btn_openOutPut = new System.Windows.Forms.Button();
             this.txt_log = new System.Windows.Forms.TextBox();
-            this.btn_MakeReport = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.txt_xlsxPath = new System.Windows.Forms.TextBox();
@@ -53,8 +54,10 @@
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dGVDataWFromXl = new System.Windows.Forms.DataGridView();
-            this.btn_clearLog = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txt_circleDiameter = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -80,6 +83,10 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.label4);
+            this.tabPage1.Controls.Add(this.txt_circleDiameter);
+            this.tabPage1.Controls.Add(this.label3);
+            this.tabPage1.Controls.Add(this.button2);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.btn_clearLog);
             this.tabPage1.Controls.Add(this.txt_UserName);
@@ -91,7 +98,6 @@
             this.tabPage1.Controls.Add(this.label10);
             this.tabPage1.Controls.Add(this.btn_openOutPut);
             this.tabPage1.Controls.Add(this.txt_log);
-            this.tabPage1.Controls.Add(this.btn_MakeReport);
             this.tabPage1.Controls.Add(this.label9);
             this.tabPage1.Controls.Add(this.label8);
             this.tabPage1.Controls.Add(this.txt_xlsxPath);
@@ -103,6 +109,26 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Main";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(8, 133);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 44);
+            this.button1.TabIndex = 42;
+            this.button1.Text = "Run Report1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // btn_clearLog
+            // 
+            this.btn_clearLog.Location = new System.Drawing.Point(11, 441);
+            this.btn_clearLog.Name = "btn_clearLog";
+            this.btn_clearLog.Size = new System.Drawing.Size(75, 23);
+            this.btn_clearLog.TabIndex = 18;
+            this.btn_clearLog.Text = "ClearLog";
+            this.btn_clearLog.UseVisualStyleBackColor = true;
+            this.btn_clearLog.Click += new System.EventHandler(this.btn_clearLog_Click);
             // 
             // txt_UserName
             // 
@@ -177,7 +203,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(107, 111);
+            this.button4.Location = new System.Drawing.Point(107, 133);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(112, 44);
             this.button4.TabIndex = 28;
@@ -215,17 +241,6 @@
             this.txt_log.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txt_log.Size = new System.Drawing.Size(207, 231);
             this.txt_log.TabIndex = 32;
-            // 
-            // btn_MakeReport
-            // 
-            this.btn_MakeReport.Location = new System.Drawing.Point(107, 161);
-            this.btn_MakeReport.Name = "btn_MakeReport";
-            this.btn_MakeReport.Size = new System.Drawing.Size(112, 37);
-            this.btn_MakeReport.TabIndex = 31;
-            this.btn_MakeReport.Text = "Run Report";
-            this.btn_MakeReport.UseVisualStyleBackColor = true;
-            this.btn_MakeReport.Visible = false;
-            this.btn_MakeReport.Click += new System.EventHandler(this.btn_MakeReport_Click_1);
             // 
             // label9
             // 
@@ -315,25 +330,41 @@
             this.dGVDataWFromXl.Size = new System.Drawing.Size(357, 438);
             this.dGVDataWFromXl.TabIndex = 0;
             // 
-            // btn_clearLog
+            // button2
             // 
-            this.btn_clearLog.Location = new System.Drawing.Point(11, 441);
-            this.btn_clearLog.Name = "btn_clearLog";
-            this.btn_clearLog.Size = new System.Drawing.Size(75, 23);
-            this.btn_clearLog.TabIndex = 18;
-            this.btn_clearLog.Text = "ClearLog";
-            this.btn_clearLog.UseVisualStyleBackColor = true;
-            this.btn_clearLog.Click += new System.EventHandler(this.btn_clearLog_Click);
+            this.button2.Location = new System.Drawing.Point(143, 178);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 43;
+            this.button2.Text = "Kill Excel";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button1
+            // label3
             // 
-            this.button1.Location = new System.Drawing.Point(8, 111);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 44);
-            this.button1.TabIndex = 42;
-            this.button1.Text = "Run Report1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(9, 111);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(78, 13);
+            this.label3.TabIndex = 44;
+            this.label3.Text = "Circle Diameter";
+            // 
+            // txt_circleDiameter
+            // 
+            this.txt_circleDiameter.Location = new System.Drawing.Point(107, 108);
+            this.txt_circleDiameter.Name = "txt_circleDiameter";
+            this.txt_circleDiameter.Size = new System.Drawing.Size(51, 20);
+            this.txt_circleDiameter.TabIndex = 45;
+            this.txt_circleDiameter.Text = "50";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(164, 115);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(31, 13);
+            this.label4.TabIndex = 46;
+            this.label4.Text = "Miles";
             // 
             // MainForm
             // 
@@ -344,6 +375,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "MainForm";
             this.Text = "Auto Report";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -364,7 +396,6 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button btn_openOutPut;
         private System.Windows.Forms.TextBox txt_log;
-        private System.Windows.Forms.Button btn_MakeReport;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txt_xlsxPath;
@@ -383,6 +414,10 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btn_clearLog;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txt_circleDiameter;
+        private System.Windows.Forms.Label label3;
     }
 }
 

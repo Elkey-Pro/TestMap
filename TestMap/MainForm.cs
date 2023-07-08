@@ -50,6 +50,7 @@ namespace RvAutoReport
         static string url_AcAhTable = @"\AcAH.png";
         static string url_cityMap = @"\CityMap.png";
         static List<string> list_image_url = new List<string>();
+        public System.Threading.CancellationTokenSource TokenSource;
 
         //  for new version
         //public string ExcelPath = @"";
@@ -369,7 +370,7 @@ namespace RvAutoReport
         }
 
         #region Copy From preview Script
-        private  void button4_Click(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e)
         {
             txt_log.Clear();
             WriteLog("Kill Excel , Word instance");
@@ -379,29 +380,43 @@ namespace RvAutoReport
 
             WriteLog("Start Loop All file xlsx in folder");
 
-            try
+            TokenSource = new System.Threading.CancellationTokenSource();
+            CancellationToken token = TokenSource.Token;
+            Task.Factory.StartNew(() =>
+
             {
-                foreach (string file in files)
+                try
                 {
-                    if (!file.Contains("~$")) // ignore the excel temp file
-                        ReadExcel(file);
+                    foreach (string file in files)
+                    {
+                        if (!file.Contains("~$")) // ignore the excel temp file
+                        {
+                            ReadExcel(file);
+
+                            if (token.IsCancellationRequested)
+                            {
+                                token.ThrowIfCancellationRequested();
+                            }
+                        }
+                            
+                    }
+               }
+                catch (OperationCanceledException) {  }
+                catch (ObjectDisposedException) {  }
+                catch (Exception ex)
+                {
+                    WriteLog(DateTime.Now + " " + ex.ToString());
                 }
 
-               
-            }
-            catch(Exception ex)
-            {
-                WriteLog(ex.ToString());
-            }
-
-            WriteLog("All Done!");
+            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+         
 
         }
 
-        private  void CreateCityMap(DataTable RvData)
+        private void CreateCityMap(DataTable RvData)
         {
 
-            if(RvData.Rows.Count > 0)
+            if (RvData.Rows.Count > 0)
             {
                 this.Invoke(new MethodInvoker(delegate ()
                 {
@@ -429,19 +444,10 @@ namespace RvAutoReport
 
 
                     int numberOfPoints = 100;
-                    double radiusInMeters = 50000;
 
+                    // convert from mile to meter
+                    double radiusInMeters = Double.Parse(txt_circleDiameter.Text) * 1609.344;
 
-                    foreach (DataRow dtrow in LatLongData.Rows)
-                    {
-                        GMap.NET.WindowsForms.GMapOverlay markers = new GMap.NET.WindowsForms.GMapOverlay("markers");
-                        GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
-                                                                        new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
-                                                                                    GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
-                        markers.Markers.Add(marker);
-                        gmap.Overlays.Add(markers);
-
-                    }
                     List<GMap.NET.PointLatLng> circlePoints = new List<GMap.NET.PointLatLng>();
                     double angle = 2 * Math.PI / numberOfPoints;
                     for (int i = 0; i < numberOfPoints; i++)
@@ -459,18 +465,38 @@ namespace RvAutoReport
 
                     Overlay.Polygons.Add(circle);
 
+                    gmap.Overlays.Add(Overlay);
+
                     // Create a GMapMarker for the center
 
-                    // Add the marker to the overlay
+                    // Add the marker to the overlay              
+
+
+                    // add all location to overlay
+                    foreach (DataRow dtrow in LatLongData.Rows)
+                    {
+                        GMap.NET.WindowsForms.GMapOverlay markers = new GMap.NET.WindowsForms.GMapOverlay("markers");
+                        //GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
+                        //                                                new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
+                        //                                                            GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
+                        //Overlay = new GMap.NET.WindowsForms.GMapOverlay("markers");
+                        GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
+                                                                        new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
+                                                                                    GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
+                        markers.Markers.Add(marker);
+                        gmap.Overlays.Add(markers);
+
+                    }            
+
+                    
+
 
                     gmap.Position = new GMap.NET.PointLatLng(AvgLat, AvgLong);
-
-                    gmap.Overlays.Add(Overlay);
                 }
             ));
             }
 
-          
+            
 
 
 
@@ -582,7 +608,7 @@ namespace RvAutoReport
 
         }
 
-        private async  void ReadExcel(string ExcelPath)
+        private  void ReadExcel(string ExcelPath)
         { 
             Excel.Application xlApp;
             Excel.Workbook xlWorkBook;
@@ -685,16 +711,11 @@ namespace RvAutoReport
                         Data.ImportRow(row);
                     }
 
-                    //DataTable Data = ReadExcelFile("data-" + SheetName, ExcelPath);
-
                     // sort by REVIEWS
                     Data.DefaultView.Sort = "[REVIEWS] DESC";
                     Data.DefaultView.Sort += ",[Current YTD Utilization] DESC";
                     Data = Data.DefaultView.ToTable();
-                    WriteLog("Sorting"  + RvType + " Data");
-
-                   
-
+                    WriteLog("Sorting"  + RvType + " Data");                
 
                     // check if lat & long data is empty or not
                     DataTable RvData = new DataTable();
@@ -710,32 +731,35 @@ namespace RvAutoReport
                     if (RvData.Rows.Count > 0)
                     {
                         WriteLog("Creating Map");
-                        //Task CreateMap = Task.Factory.StartNew(() => CreateCityMap(RvData));
-                        //await CreateMap;
-                        //Thread.Sleep(2000);
 
+                        // create map
                         CreateCityMap(RvData);
-                        // export map image
-                        Image Mapimage = gmap.ToImage();
-                        string ImagePath = FolderPath + url_cityMap;
-                        Mapimage.Save(ImagePath);
-                        Mapimage.Dispose();
 
-                        foreach (GMapOverlay overlay in gmap.Overlays.ToList())
+                        // wait for the map render completely
+                        Thread.Sleep(2000);
+
+                        // export map image
+                        this.Invoke(new MethodInvoker(delegate ()
                         {
-                            gmap.Overlays.Remove(overlay);
-                        }
-                        WriteLog("Map image exported");
+                            Image Mapimage = gmap.ToImage();
+                            string ImagePath = FolderPath + url_cityMap;
+                            Mapimage.Save(ImagePath);
+                            Mapimage.Dispose();
+
+                            foreach (GMapOverlay overlay in gmap.Overlays.ToList())
+                            {
+                                gmap.Overlays.Remove(overlay);
+                            }
+                            WriteLog("Map image exported");
+
+                        }));
+                       
                     }
                     else
                     {
                         WriteLog("missing lat & long data");
                     }
                    
-
-
-
-
                     DataTable DataForWordReport = new DataTable("DataForWOrdReport");
                     DataForWordReport.Columns.Add("FindString");
                     DataForWordReport.Columns.Add("ReplaceString");
@@ -1049,10 +1073,10 @@ namespace RvAutoReport
                     }
                     // insert price/night chart to excel
 
-                    Insert_chart(xlWorkSheet, "Z", "AA", (1 + ds_top5_pricenight.Rows.Count), "Top 25 RV PRICE / NIGHT"
+                    Insert_chart(xlWorkSheet, "Z", "AA", (1 + ds_top5_pricenight.Rows.Count), "Top 5 RV PRICE / NIGHT"
                         , "PRICE/NIGHT", XlChartType.xlXYScatter, 5, 350, 800, 300, FolderPath, url_PriceNight, Office.MsoThemeColorIndex.msoThemeColorAccent1, Color.White, Excel.XlRgbColor.rgbWhite, "", true);
 
-                    WriteLog("Created Chart for  Top 25 RV PRICE / NIGHT ");
+                    WriteLog("Created Chart for  Top 5 RV PRICE / NIGHT ");
 
                     #endregion
 
@@ -1196,8 +1220,6 @@ namespace RvAutoReport
                 Replace_string("<CITY_MAP>", "", wordApp);
             }
 
-
-
             // insert total Rv type Count Chart
             string TargetSave_url_numberofRVs = Imgsavefolder + url_numberofRVs;
             Insert_Image_Chart("<TOTAL_TYPE_CHART>", document, wordApp, TargetSave_url_numberofRVs);
@@ -1216,8 +1238,8 @@ namespace RvAutoReport
 
             // insert Price/night top 25 Chart
             string TargetSave_url_PriceNight = Imgsavefolder + url_PriceNight;
-            Insert_Image_Chart("<TOP25_PRICE_NIGHT_SCRATER_CHART>", document, wordApp, TargetSave_url_PriceNight);
-            WriteLog("Inserted Price/night top 25 Chart");
+            Insert_Image_Chart("<TOP5_PRICE_NIGHT_SCRATER_CHART>", document, wordApp, TargetSave_url_PriceNight);
+            WriteLog("Inserted Price/night top 5 Chart");
 
             // insert attributes chart
             string TargetSave_url_AttributesChart = Imgsavefolder + url_AcAhTable;
@@ -1431,6 +1453,16 @@ namespace RvAutoReport
         private void button1_Click(object sender, EventArgs e)
         {
             // should put the power automate here
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            KillWordAndExcelProcesses();
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            TokenSource.Cancel();
         }
     }
 }
