@@ -398,6 +398,7 @@ namespace RvAutoReport
                                 token.ThrowIfCancellationRequested();
                             }
                         }
+                        WriteLog("DONE!!!!!!!!!");
                             
                     }
                }
