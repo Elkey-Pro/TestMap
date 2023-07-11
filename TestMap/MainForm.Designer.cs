@@ -32,6 +32,10 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txt_circleDiameter = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.btn_clearLog = new System.Windows.Forms.Button();
             this.txt_UserName = new System.Windows.Forms.TextBox();
@@ -54,10 +58,7 @@
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dGVDataWFromXl = new System.Windows.Forms.DataGridView();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.txt_circleDiameter = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.button5 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -83,6 +84,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button5);
             this.tabPage1.Controls.Add(this.label4);
             this.tabPage1.Controls.Add(this.txt_circleDiameter);
             this.tabPage1.Controls.Add(this.label3);
@@ -110,13 +112,49 @@
             this.tabPage1.Text = "Main";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(164, 115);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(31, 13);
+            this.label4.TabIndex = 46;
+            this.label4.Text = "Miles";
+            // 
+            // txt_circleDiameter
+            // 
+            this.txt_circleDiameter.Location = new System.Drawing.Point(107, 108);
+            this.txt_circleDiameter.Name = "txt_circleDiameter";
+            this.txt_circleDiameter.Size = new System.Drawing.Size(51, 20);
+            this.txt_circleDiameter.TabIndex = 45;
+            this.txt_circleDiameter.Text = "50";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(9, 111);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(78, 13);
+            this.label3.TabIndex = 44;
+            this.label3.Text = "Circle Diameter";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(143, 169);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 43;
+            this.button2.Text = "Kill Excel";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(8, 133);
+            this.button1.Location = new System.Drawing.Point(107, 196);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 44);
+            this.button1.Size = new System.Drawing.Size(111, 42);
             this.button1.TabIndex = 42;
-            this.button1.Text = "Run Report1";
+            this.button1.Text = "Run Custom LatLong";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -203,9 +241,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(107, 133);
+            this.button4.Location = new System.Drawing.Point(107, 128);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(112, 44);
+            this.button4.Size = new System.Drawing.Size(112, 35);
             this.button4.TabIndex = 28;
             this.button4.Text = "Run Report2";
             this.button4.UseVisualStyleBackColor = true;
@@ -214,7 +252,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(9, 188);
+            this.label10.Location = new System.Drawing.Point(9, 251);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(25, 13);
             this.label10.TabIndex = 34;
@@ -234,12 +272,12 @@
             // txt_log
             // 
             this.txt_log.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.txt_log.Location = new System.Drawing.Point(12, 204);
+            this.txt_log.Location = new System.Drawing.Point(12, 267);
             this.txt_log.Multiline = true;
             this.txt_log.Name = "txt_log";
             this.txt_log.ReadOnly = true;
             this.txt_log.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txt_log.Size = new System.Drawing.Size(207, 231);
+            this.txt_log.Size = new System.Drawing.Size(207, 168);
             this.txt_log.TabIndex = 32;
             // 
             // label9
@@ -330,41 +368,15 @@
             this.dGVDataWFromXl.Size = new System.Drawing.Size(357, 438);
             this.dGVDataWFromXl.TabIndex = 0;
             // 
-            // button2
+            // button5
             // 
-            this.button2.Location = new System.Drawing.Point(143, 178);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 43;
-            this.button2.Text = "Kill Excel";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 111);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(78, 13);
-            this.label3.TabIndex = 44;
-            this.label3.Text = "Circle Diameter";
-            // 
-            // txt_circleDiameter
-            // 
-            this.txt_circleDiameter.Location = new System.Drawing.Point(107, 108);
-            this.txt_circleDiameter.Name = "txt_circleDiameter";
-            this.txt_circleDiameter.Size = new System.Drawing.Size(51, 20);
-            this.txt_circleDiameter.TabIndex = 45;
-            this.txt_circleDiameter.Text = "50";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(164, 115);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(31, 13);
-            this.label4.TabIndex = 46;
-            this.label4.Text = "Miles";
+            this.button5.Location = new System.Drawing.Point(143, 241);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 47;
+            this.button5.Text = "Clear Map";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // MainForm
             // 
@@ -418,6 +430,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txt_circleDiameter;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button5;
     }
 }
 

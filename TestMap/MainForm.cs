@@ -35,6 +35,8 @@ namespace RvAutoReport
         }
         // for old script
         //static string Word_Report_Name = "RV Rental Tampa Report-v0.2.docx";
+
+
         static string xlsx_output = Environment.CurrentDirectory + @"\XLSX_OUTPUT";
         static string Logo_path = Environment.CurrentDirectory + @"\No-Backgrounds";
         string Word_report_template_file = Environment.CurrentDirectory + @"\template" + @"\" ;
@@ -1451,9 +1453,103 @@ namespace RvAutoReport
             Process.Start("explorer.exe", txt_DocxOutPutPath.Text);
         }
 
+        private void ChildForm_DataTableReturned(object sender, DataTableEventArgs e)
+        {
+            DataTable returnedDataTable = e.DataTable;
+
+            //should put the power automate here
+                this.Invoke(new MethodInvoker(delegate ()
+                {
+                    gmap.MaxZoom = 18;
+                    gmap.MinZoom = 2;
+                    gmap.Zoom = 8;
+                    gmap.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
+                    GMap.NET.GMaps.Instance.Mode = GMap.NET.AccessMode.ServerOnly;
+
+                    //DataTable LatLongData = new DataTable();
+                    //LatLongData.Columns.Add("LAT", typeof(double));
+                    //LatLongData.Columns.Add("LONG", typeof(double));
+                    //LatLongData.Rows.Add(33.588, -112.152);
+
+                    // avg lat long
+                    double AvgLat = returnedDataTable.AsEnumerable().Average(row => row.Field<double>("LAT"));
+                    double AvgLong = returnedDataTable.AsEnumerable().Average(row => row.Field<double>("LONG"));
+
+
+                    int numberOfPoints = 100;
+
+                    // convert from mile to meter
+                    double radiusInMeters = Double.Parse(txt_circleDiameter.Text) * 1609.344;
+
+                    List<GMap.NET.PointLatLng> circlePoints = new List<GMap.NET.PointLatLng>();
+                    double angle = 2 * Math.PI / numberOfPoints;
+                    for (int i = 0; i < numberOfPoints; i++)
+                    {
+                        double lat = AvgLat + radiusInMeters / 111320d * Math.Sin(i * angle);
+                        double lng = AvgLong + radiusInMeters / (111320d * Math.Cos(AvgLat * Math.PI / 180)) * Math.Cos(i * angle);
+                        circlePoints.Add(new GMap.NET.PointLatLng(lat, lng));
+                    }
+
+                    GMap.NET.WindowsForms.GMapOverlay Overlay = new GMap.NET.WindowsForms.GMapOverlay("Overlay");
+                    GMap.NET.WindowsForms.GMapPolygon circle = new GMap.NET.WindowsForms.GMapPolygon(circlePoints, "circle");
+
+                    circle.Fill = new SolidBrush(Color.FromArgb(30, Color.Blue));  // Fill color
+                    circle.Stroke = new Pen(Color.Blue, 1);
+
+                    Overlay.Polygons.Add(circle);
+
+                    gmap.Overlays.Add(Overlay);
+
+                    // Create a GMapMarker for the center
+
+                    // Add the marker to the overlay              
+
+
+                    // add all location to overlay
+                    foreach (DataRow dtrow in returnedDataTable.Rows)
+                    {
+                        GMap.NET.WindowsForms.GMapOverlay markers = new GMap.NET.WindowsForms.GMapOverlay("markers");
+                        //GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
+                        //                                                new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
+                        //                                                            GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
+                        //Overlay = new GMap.NET.WindowsForms.GMapOverlay("markers");
+                        GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
+                                                                        new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
+                                                                                    GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
+                        markers.Markers.Add(marker);
+                        gmap.Overlays.Add(markers);
+
+                    }
+
+
+                    gmap.Position = new GMap.NET.PointLatLng(AvgLat, AvgLong);
+                }
+            ));
+
+
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
-            // should put the power automate here
+            DataTable LatLongData = new DataTable();
+            LatLongData.Columns.Add("LAT", typeof(double));
+            LatLongData.Columns.Add("LONG", typeof(double));
+
+            InputLatLong latLongForm = new InputLatLong(LatLongData);
+
+            latLongForm.TopMost = true;
+            latLongForm.DataTableReturned += ChildForm_DataTableReturned;
+            latLongForm.ShowDialog();
+
+
+           
+
+
+        }
+
+        private void LatLongForm_DataTableReturned(object sender, DataTableEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -1463,7 +1559,30 @@ namespace RvAutoReport
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            TokenSource.Cancel();
+            try
+            {
+                if(TokenSource !=null)
+                TokenSource.Cancel();
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if(gmap.Overlays.Count > 0)
+            {
+                for (int i = 0; i < gmap.Overlays.Count; i++)
+                {
+                    gmap.Overlays.RemoveAt(i);
+                }
+                gmap.Refresh();
+            }
+
+           
+
         }
     }
 }
