@@ -629,8 +629,7 @@ namespace RvAutoReport
             DataTable FullData = ReadExcelFile("OriginalData", ExcelPath);
 
             //sort by Current YTD Utilization desc
-            FullData.DefaultView.Sort = "[REVIEWS] DESC";
-            FullData.DefaultView.Sort += ",[Current YTD Utilization] DESC";
+            FullData.DefaultView.Sort = "[Current YTD Utilization] DESC";
             FullData = FullData.DefaultView.ToTable();
 
             // Total RV
@@ -715,8 +714,7 @@ namespace RvAutoReport
                     }
 
                     // sort by REVIEWS
-                    Data.DefaultView.Sort = "[REVIEWS] DESC";
-                    Data.DefaultView.Sort += ",[Current YTD Utilization] DESC";
+                    Data.DefaultView.Sort += "[Current YTD Utilization] DESC";
                     Data = Data.DefaultView.ToTable();
                     WriteLog("Sorting"  + RvType + " Data");                
 
@@ -861,9 +859,14 @@ namespace RvAutoReport
 
                     //  Average nightly price of top 5 RVs
 
-                    double AvgTop5NightlyPrice = xlWorkSheet.Cells[9, 2].Value;
+                    //double AvgTop5NightlyPrice = xlWorkSheet.Cells[9, 2].Value;
 
-                    
+                    Data.DefaultView.Sort = "[UTIL 2022] DESC";
+                    DataTable Data2 = Data.DefaultView.ToTable();
+
+                    double AvgTop5NightlyPrice = Math.Round( Data2.AsEnumerable().Take(5).Select(row => row.Field<double>("PRICE/NIGHT")).Average(),2) ;
+
+
                     DataForWordReport.Rows.Add("<AVG_NP_TOP5>", AvgTop5NightlyPrice);
 
                     //  Average nightly price calculation for last table
@@ -1572,13 +1575,16 @@ namespace RvAutoReport
 
         private void button5_Click(object sender, EventArgs e)
         {
-            if(gmap.Overlays.Count > 0)
-            {
-                for (int i = 0; i < gmap.Overlays.Count; i++)
+            int OverLayCount = gmap.Overlays.Count;
+            if (OverLayCount > 0)
+            {             
+                foreach( GMapOverlay overlay in gmap.Overlays.ToList() )
                 {
-                    gmap.Overlays.RemoveAt(i);
-                }
-                gmap.Refresh();
+                    gmap.Overlays.Remove(overlay);
+                    gmap.Refresh();
+                }    
+              
+
             }
 
            
