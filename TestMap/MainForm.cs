@@ -38,8 +38,8 @@ namespace RvAutoReport
 
 
         static string xlsx_output = Environment.CurrentDirectory + @"\XLSX_OUTPUT";
-        static string Logo_path = Environment.CurrentDirectory + @"\No-Backgrounds";
-        string Word_report_template_file = Environment.CurrentDirectory + @"\template" + @"\" ;
+        static string Logo_path = Environment.CurrentDirectory + @"\No-Backgrounds\";
+        string Word_report_template_file = Environment.CurrentDirectory + @"\template\"  ;
         static string Word_output = Environment.CurrentDirectory + @"\WORD_OUTPUT";
         static string img_temp = Environment.CurrentDirectory + @"\temp_image";
         static object misValue = System.Reflection.Missing.Value;
@@ -53,6 +53,7 @@ namespace RvAutoReport
         static string url_cityMap = @"\CityMap.png";
         static List<string> list_image_url = new List<string>();
         public System.Threading.CancellationTokenSource TokenSource;
+        public DateTime Start_time ;
 
         //  for new version
         //public string ExcelPath = @"";
@@ -389,26 +390,29 @@ namespace RvAutoReport
             {
                 try
                 {
+                    Start_time = DateTime.Now;
                     foreach (string file in files)
                     {
                         if (!file.Contains("~$")) // ignore the excel temp file
                         {
+                            
                             ReadExcel(file);
 
                             if (token.IsCancellationRequested)
                             {
                                 token.ThrowIfCancellationRequested();
                             }
-                        }
-                        WriteLog("DONE!!!!!!!!!");
-                            
+                        }                        
                     }
-               }
+                    WriteLog("Elapsed Time : "+ (DateTime.Now - Start_time).TotalSeconds );
+                    WriteLog("DONE!!!!!!!!!");
+                }
                 catch (OperationCanceledException) {  }
                 catch (ObjectDisposedException) {  }
                 catch (Exception ex)
                 {
                     WriteLog(DateTime.Now + " " + ex.ToString());
+                    //TokenSource.Cancel();
                 }
 
             }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
@@ -490,11 +494,9 @@ namespace RvAutoReport
                         gmap.Overlays.Add(markers);
 
                     }            
-
-                    
-
-
+                
                     gmap.Position = new GMap.NET.PointLatLng(AvgLat, AvgLong);
+                    gmap.Refresh();
                 }
             ));
             }
@@ -613,6 +615,7 @@ namespace RvAutoReport
 
         private  void ReadExcel(string ExcelPath)
         { 
+            
             Excel.Application xlApp;
             Excel.Workbook xlWorkBook;
             Excel.Worksheet xlWorkSheet;
@@ -627,7 +630,8 @@ namespace RvAutoReport
 
             // read all data
             DataTable FullData = ReadExcelFile("OriginalData", ExcelPath);
-
+            // remove row if RV type is null
+            FullData = FullData.AsEnumerable().Where(row => !string.IsNullOrEmpty(row.Field<string>("TYPE"))).CopyToDataTable();
             //sort by Current YTD Utilization desc
             FullData.DefaultView.Sort = "[Current YTD Utilization] DESC";
             FullData = FullData.DefaultView.ToTable();
@@ -666,21 +670,21 @@ namespace RvAutoReport
                 {
                     WriteLog("Read Data from sheet: " + shittt.Name);
 
+                    // find city name
                     List<string> cityNametemp = xlWorkBook.Name.Split('-').ToList();
-
                     string CityName = cityNametemp[1];
 
-                    list_image_url.Clear();
-
+                    // set active working sheet
                     xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(shittt.Index);
 
+                    // clear list logo image
+                    list_image_url.Clear();
 
-                    string SheetName = shittt.Name.Replace("stat-", "");
-
-                    
                     // get the RvType
+                    string SheetName = shittt.Name.Replace("stat-", "");                
                     string RvType = string.Empty;
 
+                    // add class to Rv Type
                     if (SheetName == "A" || SheetName == "B" || SheetName == "C")
                     {
                         RvType = "Class " + SheetName;
@@ -700,24 +704,22 @@ namespace RvAutoReport
                     }
                     WriteLog("Image Folder Path : " + FolderPath);
 
-                    // create Doc file name   =  city name - RvType
+                    // create Docx report file name  :  city name - RvType
                     string DocFileName = xlWorkBook.Name.Replace(CityName, CityName + "-" + RvType).Replace("xlsx", "docx");
 
                     // read accompanying data set and sort 
                     var filteredRow = FullData.AsEnumerable().Where(row => row.Field<string>("TYPE") == SheetName);
-
                     DataTable Data = FullData.Clone();
-
                     foreach (var row in filteredRow)
                     {
                         Data.ImportRow(row);
                     }
-
-                    // sort by REVIEWS
+                    // sort by Current YTD Utilization
                     Data.DefaultView.Sort += "[Current YTD Utilization] DESC";
                     Data = Data.DefaultView.ToTable();
-                    WriteLog("Sorting"  + RvType + " Data");                
+                    WriteLog("Sorting"  + RvType + " Data");
 
+                    #region Map Making
                     // check if lat & long data is empty or not
                     DataTable RvData = new DataTable();
                     var checkifemptydata = Data.AsEnumerable()
@@ -728,7 +730,7 @@ namespace RvAutoReport
                         RvData = checkifemptydata.CopyToDataTable();
                     }
 
-
+                    // case lat long data is available, start creating map 
                     if (RvData.Rows.Count > 0)
                     {
                         WriteLog("Creating Map");
@@ -747,9 +749,11 @@ namespace RvAutoReport
                             Mapimage.Save(ImagePath);
                             Mapimage.Dispose();
 
+                            // clean map after exported image
                             foreach (GMapOverlay overlay in gmap.Overlays.ToList())
                             {
                                 gmap.Overlays.Remove(overlay);
+                                gmap.Refresh();
                             }
                             WriteLog("Map image exported");
 
@@ -760,12 +764,13 @@ namespace RvAutoReport
                     {
                         WriteLog("missing lat & long data");
                     }
-                   
+                    #endregion
+
                     DataTable DataForWordReport = new DataTable("DataForWOrdReport");
                     DataForWordReport.Columns.Add("FindString");
                     DataForWordReport.Columns.Add("ReplaceString");
 
-                    WriteLog(" get List top 5 Maker");
+                    WriteLog(" get List top 5 Maker Name");
                     // get list_of top5 maker
                     //List<string> Top5MakerandModel = Data.AsEnumerable().Take(5)
                     //                                        .Select(row => row.Field<string>("MAKE") + " - Length : " + row.Field<Double>("LENGTH").ToString())
@@ -855,17 +860,16 @@ namespace RvAutoReport
                     DataForWordReport.Rows.Add("<FUTURE_UTI_90>", (xlWorkSheet.Cells[21, 2].Value * 100) + "%");
 
                     //  Potential Annual
-                    DataForWordReport.Rows.Add("<POTENTIAL_ANNUAL>", xlWorkSheet.Cells[22, 2].Value);
+                    DataForWordReport.Rows.Add("<POTENTIAL_ANNUAL>", "$" + xlWorkSheet.Cells[22, 2].Value);
 
                     //  Average nightly price of top 5 RVs
 
-                    //double AvgTop5NightlyPrice = xlWorkSheet.Cells[9, 2].Value;
-
+                    // sort data again by UTIL 2022
                     Data.DefaultView.Sort = "[UTIL 2022] DESC";
+
                     DataTable Data2 = Data.DefaultView.ToTable();
 
-                    double AvgTop5NightlyPrice = Math.Round( Data2.AsEnumerable().Take(5).Select(row => row.Field<double>("PRICE/NIGHT")).Average(),2) ;
-
+                    double AvgTop5NightlyPrice = (double)Math.Round( Data2.AsEnumerable().Take(5).Select(row => row.Field<decimal>("PRICE/NIGHT")).Average(),2) ;
 
                     DataForWordReport.Rows.Add("<AVG_NP_TOP5>", AvgTop5NightlyPrice);
 
@@ -893,7 +897,7 @@ namespace RvAutoReport
                     DataForWordReport.WriteXml("data.xml");
 
 
-                    WriteLog("Start Create Chart");
+                    WriteLog("Creating Chart");
                     #region totalRVcount
                     //write header to cell
                     xlWorkSheet.Cells[1, 28].Value = "TYPE";
@@ -917,7 +921,6 @@ namespace RvAutoReport
                     WriteLog("Created Chart for totalRVcount ");
 
                     #endregion
-
 
                     #region top5 Rv length
                     // avg top5 Rv length data set
@@ -954,7 +957,6 @@ namespace RvAutoReport
                     Insert_chart(xlWorkSheet, "AD", "AE", (1 + Top5_length.Rows.Count), "Top5 Rv length"
                     , "RV LENGTH", XlChartType.xlColumnClustered, 5, 950, 500, 300, FolderPath, url_lengthof5RV, Office.MsoThemeColorIndex.msoThemeColorLight1, Color.Black, Excel.XlRgbColor.rgbBlack, "", true);
                     #endregion
-
 
                     #region Average Daily Price/Nigh
 
@@ -1086,21 +1088,12 @@ namespace RvAutoReport
 
                     #endregion
 
-
-                    WriteLog("Inserting Logo to excel sheet ");
-                    // start insert logo
-                    string cell = string.Empty;
-                    //load all the available logo
-                    for (int i = 1; i <= 5; i++)
+                    foreach(string rv in Top5MakerandModel)
                     {
-                        cell = xlWorkSheet.Cells[i, 5].Value;
-                        if (!string.IsNullOrEmpty(cell))
+                        string LogoLocation = Logo_path + rv.Substring(2).Trim() + ".png";
+                        if(File.Exists(LogoLocation))
                         {
-                            // add image url 
-                            list_image_url.Add(cell);
-
-                            // clear values
-                            xlWorkSheet.Cells[i, 5].Value = "";
+                            list_image_url.Add(LogoLocation);
                         }
                     }
 
@@ -1109,8 +1102,6 @@ namespace RvAutoReport
                     {
                         int x = 500;
                         int y = 0;
-
-
                         int width = 0;
                         int height = 80;
                         foreach (var item in list_image_url)
@@ -1127,23 +1118,21 @@ namespace RvAutoReport
                         }
                     }
 
-                    // generate docx report file
+                   
                     WriteLog("Generating Word report ");
-
+                    // generate docx report file
                     Generate_Word_Report(RvType, xlWorkBook.Name.Replace(".xlsx", ""), DataForWordReport, Top5MakerandModel, DocFileName);
-
+                    // release excel work sheet
                     releaseObject(xlWorkSheet);
                 }
             }
-
+            // save excel workbook
             xlWorkBook.SaveAs(ExcelPath, Excel.XlFileFormat.xlOpenXMLWorkbook, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlNoChange, misValue, misValue, misValue, misValue, misValue);
             xlWorkBook.Close(true, misValue, misValue);
             xlApp.Quit();
-            //add some text 
+            // release work app
             releaseObject(xlWorkBook);
-            releaseObject(xlApp);
-       
-
+            releaseObject(xlApp);   
             WriteLog("Saved Excel Work book");
             KillWordAndExcelProcesses();
         }

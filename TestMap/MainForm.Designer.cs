@@ -245,7 +245,7 @@
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(112, 35);
             this.button4.TabIndex = 28;
-            this.button4.Text = "Run Report2";
+            this.button4.Text = "Run Auto Report";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
