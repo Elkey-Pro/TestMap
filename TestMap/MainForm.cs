@@ -33,10 +33,7 @@ namespace RvAutoReport
         {
             InitializeComponent();
         }
-        // for old script
-        //static string Word_Report_Name = "RV Rental Tampa Report-v0.2.docx";
-
-
+        // from old script
         static string xlsx_output = Environment.CurrentDirectory + @"\XLSX_OUTPUT";
         static string Logo_path = Environment.CurrentDirectory + @"\No-Backgrounds\";
         string Word_report_template_file = Environment.CurrentDirectory + @"\template\"  ;
@@ -55,7 +52,7 @@ namespace RvAutoReport
         public System.Threading.CancellationTokenSource TokenSource;
         public DateTime Start_time ;
 
-        //  for new version
+        //  for new version // due to bug at export map image so not yet using these
         //public string ExcelPath = @"";
         public DataTable Excel_data;
         //public List<string> list_image_url = new List<string>();
@@ -66,13 +63,6 @@ namespace RvAutoReport
             txt_xlsxPath.Text = Environment.CurrentDirectory +  @"\XLSX_OUTPUT" ;
             txt_DocxOutPutPath.Text = Environment.CurrentDirectory + @"\WORD_OUTPUT";
             Word_report_template_file = Word_report_template_file + txt_docxTemp.Text;
-            // load data.xml to datatable & gridview
-            //DataForWordReport.Columns.Add("FindString");
-            //DataForWordReport.Columns.Add("Row");
-            //DataForWordReport.Columns.Add("Column");
-            //DataForWordReport.Columns.Add("Type");
-            //DataForWordReport.ReadXml(DataXmlPath);
-            //dGVDataWFromXl.DataSource = DataForWordReport;
 
         }
 
@@ -92,20 +82,6 @@ namespace RvAutoReport
             {
                 process.Kill();
             }
-        }
-
-
-        private void btn_MakeReport_Click_1(object sender, EventArgs e)
-        {
-            //KillWordAndExcelProcesses();
-
-            //string[] files = Directory.GetFiles(txt_xlsxPath.Text, "*.xlsx");
-
-            //foreach (string file in files)
-            //{
-            //    if (!file.Contains("~$")) // ignore the excel temp file
-            //        ReadExcel(file);
-            //}
         }
 
         public void Invoke_require(Action Action)
@@ -139,6 +115,7 @@ namespace RvAutoReport
             return dataTable;
         }
 
+        #region ignore
         //private void ReadExcel(string ExcelPath)
         //{
         //    WriteLog("Start Read Excel");
@@ -332,6 +309,7 @@ namespace RvAutoReport
         //    ExcelApp.xlApp.Quit();
         //    ExcelApp.releaseObject();
         //}
+        #endregion
 
         private DataTable GetDataTableFromDataGridView(DataGridView dataGridView)
         {
@@ -483,10 +461,6 @@ namespace RvAutoReport
                     foreach (DataRow dtrow in LatLongData.Rows)
                     {
                         GMap.NET.WindowsForms.GMapOverlay markers = new GMap.NET.WindowsForms.GMapOverlay("markers");
-                        //GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
-                        //                                                new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
-                        //                                                            GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
-                        //Overlay = new GMap.NET.WindowsForms.GMapOverlay("markers");
                         GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
                                                                         new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
                                                                                     GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
@@ -500,11 +474,7 @@ namespace RvAutoReport
                 }
             ));
             }
-
-            
-
-
-
+         
         }
 
         private static void Insert_chart(Excel.Worksheet xlWorkSheet, string chart_range_start, string chart_range_end, int total_line, string chart_name, string serie_name, Excel.XlChartType chartType
@@ -545,9 +515,6 @@ namespace RvAutoReport
             else
             {
                 Excel.Range xValuesRange = xlWorkSheet.Range[xDataRange];
-                //Excel.Series xSeries = CustomChart.SeriesCollection().NewSeries();
-                //xSeries.XValues = xValuesRange;
-
 
                 Excel.Range yValuesRange = xlWorkSheet.Range[yDataRange];
                 Excel.Series ySeries = CustomChart.SeriesCollection().NewSeries();
@@ -771,11 +738,7 @@ namespace RvAutoReport
                     DataForWordReport.Columns.Add("ReplaceString");
 
                     WriteLog(" get List top 5 Maker Name");
-                    // get list_of top5 maker
-                    //List<string> Top5MakerandModel = Data.AsEnumerable().Take(5)
-                    //                                        .Select(row => row.Field<string>("MAKE") + " - Length : " + row.Field<Double>("LENGTH").ToString())
-                    //                                        .Distinct()
-                                                            //.ToList();
+
                     List<string> Top5MakerandModel = Data.AsEnumerable()
                                         .Select((row) =>  row.Field<string>("MAKE") )
                                         .Distinct().Take(5)
