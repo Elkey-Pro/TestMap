@@ -32,6 +32,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button5 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.txt_circleDiameter = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -58,7 +59,9 @@
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dGVDataWFromXl = new System.Windows.Forms.DataGridView();
-            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txt_csvPath = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -84,6 +87,9 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.txt_csvPath);
+            this.tabPage1.Controls.Add(this.label5);
+            this.tabPage1.Controls.Add(this.button6);
             this.tabPage1.Controls.Add(this.button5);
             this.tabPage1.Controls.Add(this.label4);
             this.tabPage1.Controls.Add(this.txt_circleDiameter);
@@ -112,10 +118,20 @@
             this.tabPage1.Text = "Main";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(142, 266);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 47;
+            this.button5.Text = "Clear Map";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(164, 115);
+            this.label4.Location = new System.Drawing.Point(164, 138);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(31, 13);
             this.label4.TabIndex = 46;
@@ -123,7 +139,7 @@
             // 
             // txt_circleDiameter
             // 
-            this.txt_circleDiameter.Location = new System.Drawing.Point(107, 108);
+            this.txt_circleDiameter.Location = new System.Drawing.Point(107, 131);
             this.txt_circleDiameter.Name = "txt_circleDiameter";
             this.txt_circleDiameter.Size = new System.Drawing.Size(51, 20);
             this.txt_circleDiameter.TabIndex = 45;
@@ -132,7 +148,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 111);
+            this.label3.Location = new System.Drawing.Point(9, 134);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(78, 13);
             this.label3.TabIndex = 44;
@@ -140,7 +156,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(143, 169);
+            this.button2.Location = new System.Drawing.Point(142, 194);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 43;
@@ -150,9 +166,9 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(107, 196);
+            this.button1.Location = new System.Drawing.Point(106, 221);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(111, 42);
+            this.button1.Size = new System.Drawing.Size(111, 39);
             this.button1.TabIndex = 42;
             this.button1.Text = "Run Custom LatLong";
             this.button1.UseVisualStyleBackColor = true;
@@ -170,7 +186,7 @@
             // 
             // txt_UserName
             // 
-            this.txt_UserName.Location = new System.Drawing.Point(107, 87);
+            this.txt_UserName.Location = new System.Drawing.Point(107, 110);
             this.txt_UserName.Name = "txt_UserName";
             this.txt_UserName.Size = new System.Drawing.Size(111, 20);
             this.txt_UserName.TabIndex = 41;
@@ -178,7 +194,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 90);
+            this.label2.Location = new System.Drawing.Point(9, 113);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(57, 13);
             this.label2.TabIndex = 40;
@@ -186,7 +202,7 @@
             // 
             // txt_docxTemp
             // 
-            this.txt_docxTemp.Location = new System.Drawing.Point(107, 36);
+            this.txt_docxTemp.Location = new System.Drawing.Point(107, 59);
             this.txt_docxTemp.Name = "txt_docxTemp";
             this.txt_docxTemp.Size = new System.Drawing.Size(112, 20);
             this.txt_docxTemp.TabIndex = 39;
@@ -195,7 +211,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 39);
+            this.label1.Location = new System.Drawing.Point(9, 62);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(84, 13);
             this.label1.TabIndex = 38;
@@ -241,18 +257,18 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(107, 128);
+            this.button4.Location = new System.Drawing.Point(106, 153);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(112, 35);
             this.button4.TabIndex = 28;
-            this.button4.Text = "Run Auto Report";
+            this.button4.Text = "Run Auto Word Report";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(9, 251);
+            this.label10.Location = new System.Drawing.Point(9, 277);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(25, 13);
             this.label10.TabIndex = 34;
@@ -272,18 +288,18 @@
             // txt_log
             // 
             this.txt_log.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.txt_log.Location = new System.Drawing.Point(12, 267);
+            this.txt_log.Location = new System.Drawing.Point(12, 293);
             this.txt_log.Multiline = true;
             this.txt_log.Name = "txt_log";
             this.txt_log.ReadOnly = true;
             this.txt_log.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txt_log.Size = new System.Drawing.Size(207, 168);
+            this.txt_log.Size = new System.Drawing.Size(207, 142);
             this.txt_log.TabIndex = 32;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(8, 66);
+            this.label9.Location = new System.Drawing.Point(8, 89);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(93, 13);
             this.label9.TabIndex = 30;
@@ -292,7 +308,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(9, 10);
+            this.label8.Location = new System.Drawing.Point(9, 33);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(51, 13);
             this.label8.TabIndex = 29;
@@ -300,14 +316,14 @@
             // 
             // txt_xlsxPath
             // 
-            this.txt_xlsxPath.Location = new System.Drawing.Point(81, 6);
+            this.txt_xlsxPath.Location = new System.Drawing.Point(81, 29);
             this.txt_xlsxPath.Name = "txt_xlsxPath";
             this.txt_xlsxPath.Size = new System.Drawing.Size(138, 20);
             this.txt_xlsxPath.TabIndex = 28;
             // 
             // txt_DocxOutPutPath
             // 
-            this.txt_DocxOutPutPath.Location = new System.Drawing.Point(107, 63);
+            this.txt_DocxOutPutPath.Location = new System.Drawing.Point(107, 86);
             this.txt_DocxOutPutPath.Name = "txt_DocxOutPutPath";
             this.txt_DocxOutPutPath.Size = new System.Drawing.Size(111, 20);
             this.txt_DocxOutPutPath.TabIndex = 27;
@@ -368,15 +384,31 @@
             this.dGVDataWFromXl.Size = new System.Drawing.Size(357, 438);
             this.dGVDataWFromXl.TabIndex = 0;
             // 
-            // button5
+            // button6
             // 
-            this.button5.Location = new System.Drawing.Point(143, 241);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 23);
-            this.button5.TabIndex = 47;
-            this.button5.Text = "Clear Map";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.button6.Location = new System.Drawing.Point(3, 153);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(83, 35);
+            this.button6.TabIndex = 48;
+            this.button6.Text = "Csv To Xlsx ";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(9, 10);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(50, 13);
+            this.label5.TabIndex = 49;
+            this.label5.Text = "Csv Path";
+            // 
+            // txt_csvPath
+            // 
+            this.txt_csvPath.Location = new System.Drawing.Point(81, 7);
+            this.txt_csvPath.Name = "txt_csvPath";
+            this.txt_csvPath.Size = new System.Drawing.Size(138, 20);
+            this.txt_csvPath.TabIndex = 50;
             // 
             // MainForm
             // 
@@ -431,6 +463,9 @@
         private System.Windows.Forms.TextBox txt_circleDiameter;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.TextBox txt_csvPath;
+        private System.Windows.Forms.Label label5;
     }
 }
 
