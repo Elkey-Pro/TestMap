@@ -46,6 +46,8 @@ namespace RvAutoReport
         static object misValue = System.Reflection.Missing.Value;
         static object oFalse = false;
         static object oTrue = true;
+
+        // image template name , do not touch
         static string url_PriceNight = @"\priceNight.png";
         static string url_numberofRVs = @"\numberofRVs.png";
         static string url_lengthof5RV = @"\lengthof5RV.png";
@@ -96,8 +98,6 @@ namespace RvAutoReport
                     csv_input = txt_csvPath.Text;
                    
                 }
-
-
             }
 
             Word_report_template_file = Word_report_template_file + txt_docxTemp.Text;
@@ -398,54 +398,67 @@ namespace RvAutoReport
             ChangeCotrolStatus(false);
             WriteLog("Kill Excel , Word instance");
             KillWordAndExcelProcesses();
+            if (!File.Exists(Word_report_template_file))
+            {
+                WriteLog("Word Template not found! Please check again ");
+                return;
+            }
+                
 
             string[] files = Directory.GetFiles(xlsx_output, "*.xlsx");
-
-            WriteLog("Start Loop All file xlsx in folder");
-
-            TokenSource = new System.Threading.CancellationTokenSource();
-            CancellationToken token = TokenSource.Token;
-            Task.Factory.StartNew(() =>
-
+            if(files.Length >0)
             {
-                try
+                WriteLog("Start Loop All file xlsx in folder");
+
+                TokenSource = new System.Threading.CancellationTokenSource();
+                CancellationToken token = TokenSource.Token;
+                Task.Factory.StartNew(() =>
+
                 {
-                    Start_time = DateTime.Now;
-                    foreach (string file in files)
+                    try
                     {
-                        if (!file.Contains("~$")) // ignore the excel temp file
+                        Start_time = DateTime.Now;
+                        foreach (string file in files)
                         {
-                            
-                            ReadExcel(file);
-
-                            if (token.IsCancellationRequested)
+                            if (!file.Contains("~$")) // ignore the excel temp file
                             {
-                                token.ThrowIfCancellationRequested();
-                            }
-                        }                        
-                    }
-                    WriteLog("Elapsed Time : "+ Math.Round((DateTime.Now - Start_time).TotalSeconds,0) );
-                    WriteLog("DONE!!!!!!!!!");
-                    this.Invoke(new MethodInvoker(delegate
-                    {
-                        ChangeCotrolStatus(true);
-                    }
-));
-                }
-                catch (OperationCanceledException) {  }
-                catch (ObjectDisposedException) {  }
-                catch (Exception ex)
-                {
-                    WriteLog(DateTime.Now + " " + ex.ToString());
-                    this.Invoke(new MethodInvoker(delegate
-                    {
-                        ChangeCotrolStatus(true);
-                    }
-                    ));
-                    //TokenSource.Cancel();
-                }
 
-            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                                ReadExcel(file);
+
+                                if (token.IsCancellationRequested)
+                                {
+                                    token.ThrowIfCancellationRequested();
+                                }
+                            }
+                        }
+                        WriteLog("Elapsed Time : " + Math.Round((DateTime.Now - Start_time).TotalSeconds, 0));
+                        WriteLog("DONE!!!!!!!!!");
+                        this.Invoke(new MethodInvoker(delegate
+                        {
+                            ChangeCotrolStatus(true);
+                        }
+    ));
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (ObjectDisposedException) { }
+                    catch (Exception ex)
+                    {
+                        WriteLog(DateTime.Now + " " + ex.ToString());
+                        this.Invoke(new MethodInvoker(delegate
+                        {
+                            ChangeCotrolStatus(true);
+                        }
+                        ));
+                        //TokenSource.Cancel();
+                    }
+
+                }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }
+            else
+            {
+                WriteLog("No File !!");
+            }
+            
          
 
         }
@@ -519,8 +532,7 @@ namespace RvAutoReport
                         markers.Markers.Add(marker);
                         gmap.Overlays.Add(markers);
 
-                    }            
-                
+                    }                          
                     gmap.Position = new GMap.NET.PointLatLng(AvgLat, AvgLong);
                     gmap.Refresh();
                 }
@@ -1627,52 +1639,60 @@ namespace RvAutoReport
             ChangeCotrolStatus(false);
             string[] files = Directory.GetFiles(csv_input, "*.csv");
 
-            WriteLog("Start Loop All file csv in folder");
-
-            TokenSource = new System.Threading.CancellationTokenSource();
-            CancellationToken token = TokenSource.Token;
-            Task.Factory.StartNew(() =>
-
+            if(files.Length > 0)
             {
-                try
+                WriteLog("Start Loop All file csv in folder");
+
+                TokenSource = new System.Threading.CancellationTokenSource();
+                CancellationToken token = TokenSource.Token;
+                Task.Factory.StartNew(() =>
+
                 {
-                    Start_time = DateTime.Now;
-                    foreach (string file in files)
+                    try
                     {
-                        if (!file.Contains("~$")) // ignore the excel temp file
+                        Start_time = DateTime.Now;
+                        foreach (string file in files)
                         {
-
-                            CSVtoXlsx(file);
-
-                            if (token.IsCancellationRequested)
+                            if (!file.Contains("~$")) // ignore the excel temp file
                             {
-                                token.ThrowIfCancellationRequested();
+
+                                CSVtoXlsx(file);
+
+                                if (token.IsCancellationRequested)
+                                {
+                                    token.ThrowIfCancellationRequested();
+                                }
                             }
                         }
-                    }
-                    WriteLog("Elapsed Time : " + Math.Round((DateTime.Now - Start_time).TotalSeconds));
-                    WriteLog("DONE!!!!!!!!!");
-                    this.Invoke(new MethodInvoker ( delegate
-                    {
-                        ChangeCotrolStatus(true);
-                    }       
-                    ));
-                   
-                }
-                catch (OperationCanceledException) { }
-                catch (ObjectDisposedException) { }
-                catch (Exception ex)
-                {
-                    WriteLog(DateTime.Now + " " + ex.ToString());
-                    this.Invoke(new MethodInvoker(delegate
-                    {
-                        ChangeCotrolStatus(true);
-                    }
-                    ));
-                    //TokenSource.Cancel();
-                }
+                        WriteLog("Elapsed Time : " + Math.Round((DateTime.Now - Start_time).TotalSeconds));
+                        WriteLog("DONE!!!!!!!!!");
+                        this.Invoke(new MethodInvoker(delegate
+                        {
+                            ChangeCotrolStatus(true);
+                        }
+                        ));
 
-            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (ObjectDisposedException) { }
+                    catch (Exception ex)
+                    {
+                        WriteLog(DateTime.Now + " " + ex.ToString());
+                        this.Invoke(new MethodInvoker(delegate
+                        {
+                            ChangeCotrolStatus(true);
+                        }
+                        ));
+                        //TokenSource.Cancel();
+                    }
+
+                }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }
+            else
+            {
+                WriteLog("No file!");
+            }
+          
 
         }
 
