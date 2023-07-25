@@ -732,17 +732,6 @@ namespace RvAutoReport
                     // read accompanying data set and sort 
                     DataTable Data = ReadExcelFile(shittt.Name.Replace("stat-", "data-"), ExcelPath);
 
-                    //var filteredRow = FullData.AsEnumerable().Where(row => row.Field<string>("TYPE") == SheetName);
-                    //DataTable Data = FullData.Clone();
-                    //foreach (var row in filteredRow)
-                    //{
-                    //    Data.ImportRow(row);
-                    //}
-                    //// sort by Current YTD Utilization
-                    //Data.DefaultView.Sort += "[Current YTD Utilization] DESC";
-                    //Data = Data.DefaultView.ToTable();
-                    //WriteLog("Sorting"  + RvType + " Data");
-
                     #region Map Making
                     // check if lat & long data is empty or not
                     DataTable RvData = new DataTable();
@@ -1027,21 +1016,39 @@ namespace RvAutoReport
                     #region ACtoAH chart
 
                     // create datasource
-
-                    double Top25PETFRIENDELY = Data.AsEnumerable().Take(25).Sum(row => row.Field<double>("PET FRIENDELY")) / 25;
-                    double Top25TAILGATEFRIENDELY = Data.AsEnumerable().Take(25).Sum(row => row.Field<double>("TAILGATE FRIENDELY")) / 25;
-                    double Top25SMOKINGALLOWED = Data.AsEnumerable().Take(25).Sum(row => row.Field<double>("SMOKING ALLOWED")) / 25;
-                    double Top25FESTIVALFRIENDLY = Data.AsEnumerable().Take(25).Sum(row => row.Field<double>("FESTIVAL FRIENDLY")) / 25;
-                    double Top25GENERATOR = Data.AsEnumerable().Take(25).Sum(row => row.Field<double>("GENERATOR")) / 25;
-
                     DataTable AcAHTable = new DataTable();
                     AcAHTable.Columns.Add("TYPE");
                     AcAHTable.Columns.Add("VALUE");
-                    AcAHTable.Rows.Add("PET FRIENDELY", Top25PETFRIENDELY);
-                    AcAHTable.Rows.Add("TAILGATE FRIENDELY", Top25TAILGATEFRIENDELY);
-                    AcAHTable.Rows.Add("SMOKING ALLOWED", Top25SMOKINGALLOWED);
-                    AcAHTable.Rows.Add("FESTIVAL FRIENDLY", Top25FESTIVALFRIENDLY);
-                    AcAHTable.Rows.Add("GENERATOR", Top25GENERATOR);
+
+                    DataTable dt_forAttributes = null;
+                    var Checkdt_forAttribute = Data.AsEnumerable().Take(25);
+                    if(Checkdt_forAttribute.Any())
+                    {
+                        dt_forAttributes = Checkdt_forAttribute.CopyToDataTable();
+                    }
+                    if(dt_forAttributes != null)
+                    {
+                        double Top25PETFRIENDELY = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("PET FRIENDELY")) / dt_forAttributes.Rows.Count;
+                        double Top25TAILGATEFRIENDELY = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("TAILGATE FRIENDELY")) / dt_forAttributes.Rows.Count;
+                        double Top25SMOKINGALLOWED = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("SMOKING ALLOWED")) / dt_forAttributes.Rows.Count;
+                        double Top25FESTIVALFRIENDLY = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("FESTIVAL FRIENDLY")) / dt_forAttributes.Rows.Count;
+                        double Top25GENERATOR = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("GENERATOR")) / dt_forAttributes.Rows.Count;                     
+                        AcAHTable.Rows.Add("PET FRIENDELY", Top25PETFRIENDELY);
+                        AcAHTable.Rows.Add("TAILGATE FRIENDELY", Top25TAILGATEFRIENDELY);
+                        AcAHTable.Rows.Add("SMOKING ALLOWED", Top25SMOKINGALLOWED);
+                        AcAHTable.Rows.Add("FESTIVAL FRIENDLY", Top25FESTIVALFRIENDLY);
+                        AcAHTable.Rows.Add("GENERATOR", Top25GENERATOR);
+                    }
+                    else
+                    {
+                        AcAHTable.Rows.Add("PET FRIENDELY", 0);
+                        AcAHTable.Rows.Add("TAILGATE FRIENDELY", 0);
+                        AcAHTable.Rows.Add("SMOKING ALLOWED", 0);
+                        AcAHTable.Rows.Add("FESTIVAL FRIENDLY", 0);
+                        AcAHTable.Rows.Add("GENERATOR", 0);
+                    }
+                    
+
 
                     // insert data to excel
 
@@ -1080,19 +1087,6 @@ namespace RvAutoReport
                     {
                         ds_top5_pricenight.Rows.Add(row["NAME"], row["YEAR"], row["PRICE/NIGHT"]);
                     }
-
-                    // read all sheet calculated data
-                    //DataTable CurremtSheetCalculcatedData = new DataTable();
-                    //CurremtSheetCalculcatedData.Columns.Add("TYPE");
-                    //CurremtSheetCalculcatedData.Columns.Add("VALUE");
-
-                    //for (int i = 1; i <= 22; i++)
-                    //{
-                    //    DataRow dtrow1 = CurremtSheetCalculcatedData.NewRow();
-                    //    dtrow1["TYPE"] = xlWorkSheet.Cells[i, 1].Value;
-                    //    dtrow1["VALUE"] = xlWorkSheet.Cells[i, 2].Value;
-                    //    CurremtSheetCalculcatedData.Rows.Add(dtrow1);
-                    //}
 
                     //write header to cell
                     xlWorkSheet.Cells[1, 25].Value = "NAME";
@@ -1648,8 +1642,8 @@ namespace RvAutoReport
                 Task.Factory.StartNew(() =>
 
                 {
-                    try
-                    {
+                    //try
+                    //{
                         Start_time = DateTime.Now;
                         foreach (string file in files)
                         {
@@ -1672,19 +1666,19 @@ namespace RvAutoReport
                         }
                         ));
 
-                    }
-                    catch (OperationCanceledException) { }
-                    catch (ObjectDisposedException) { }
-                    catch (Exception ex)
-                    {
-                        WriteLog(DateTime.Now + " " + ex.ToString());
-                        this.Invoke(new MethodInvoker(delegate
-                        {
-                            ChangeCotrolStatus(true);
-                        }
-                        ));
-                        //TokenSource.Cancel();
-                    }
+                    //}
+                    //catch (OperationCanceledException) { }
+                    //catch (ObjectDisposedException) { }
+                    //catch (Exception ex)
+                    //{
+                    //    WriteLog(DateTime.Now + " " + ex.ToString());
+                    //    this.Invoke(new MethodInvoker(delegate
+                    //    {
+                    //        ChangeCotrolStatus(true);
+                    //    }
+                    //    ));
+                    //    //TokenSource.Cancel();
+                    //}
 
                 }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             }
@@ -1881,15 +1875,30 @@ namespace RvAutoReport
 
                     //Potential Annual Revenue for the top 5 based on 2022 Utilization
                     // sort by UTIL 2022 desc
-                    DataTable dtFor_Potential = rvData.AsEnumerable().OrderByDescending(row => decimal.Parse(row.Field<string>("UTIL 2022")))
-                        .Where(Row => Row.Field<string>("UTIL 2022") != "0").Take(5).CopyToDataTable();
 
-                    // avg of Top5 Ulti2022
-                    decimal avgTop5Ulti2022 = Math.Round(dtFor_Potential.AsEnumerable().Select(row => decimal.Parse(row.Field<string>("UTIL 2022").Replace("%", ""))).Average(), 0);
-                    // avg of Top5 Price/Night
-                    decimal avgTop5PriceNight = Math.Round(dtFor_Potential.AsEnumerable().Select(row => decimal.Parse(row.Field<string>("PRICE/NIGHT").Replace("$", ""))).Average(), 2);
-                    decimal PAR = Math.Round((365 * avgTop5Ulti2022 / 100) * avgTop5PriceNight);
-                    xlData.Rows.Add("Potential Annual Revenue for the top 5 based on 2022 Utilization", "$" + PAR);
+                    //DataTable dtFor_Potential = rvData.AsEnumerable().OrderByDescending(row => decimal.Parse(row.Field<string>("UTIL 2022")))
+                    //    .Where(Row => Row.Field<string>("UTIL 2022") != "0").Take(5).CopyToDataTable();
+
+                    DataTable dtFor_Potential = null;
+                    var Check = rvData.AsEnumerable().OrderByDescending(row => decimal.Parse(row.Field<string>("UTIL 2022"))).Where(Row => Row.Field<string>("UTIL 2022") != "0");
+                      
+                    if(Check.Any())
+                    {
+                        dtFor_Potential = Check.CopyToDataTable();
+                    }
+                    if(dtFor_Potential!=null)
+                    {
+                        dtFor_Potential = dtFor_Potential.AsEnumerable().Take(5).CopyToDataTable();
+                        // avg of Top5 Ulti2022
+                        decimal avgTop5Ulti2022 = Math.Round(dtFor_Potential.AsEnumerable().Select(row => decimal.Parse(row.Field<string>("UTIL 2022").Replace("%", ""))).Average(), 0);
+                        // avg of Top5 Price/Night
+                        decimal avgTop5PriceNight = Math.Round(dtFor_Potential.AsEnumerable().Select(row => decimal.Parse(row.Field<string>("PRICE/NIGHT").Replace("$", ""))).Average(), 2);
+                        decimal PAR = Math.Round((365 * avgTop5Ulti2022 / 100) * avgTop5PriceNight);
+                        xlData.Rows.Add("Potential Annual Revenue for the top 5 based on 2022 Utilization", "$" + PAR);
+                    }
+                    xlData.Rows.Add("Potential Annual Revenue for the top 5 based on 2022 Utilization", "Not Enough Data");
+
+
 
                     WriteLog("start calculated data  to sheet " + NewSheetStat.Name);
                     // write data to stat worksheet
