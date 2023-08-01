@@ -37,15 +37,18 @@ namespace RvAutoReport
             InitializeComponent();
         }
         // from old script
-        static string csv_input = Environment.CurrentDirectory + @"\CSV_INPUT";
-        static string xlsx_output = Environment.CurrentDirectory + @"\XLSX_OUTPUT";
-        static string Logo_path = Environment.CurrentDirectory + @"\No-Backgrounds\";
-        string Word_report_template_file = Environment.CurrentDirectory + @"\template\"  ;
-        static string Word_output = Environment.CurrentDirectory + @"\WORD_OUTPUT";
-        static string img_temp = Environment.CurrentDirectory + @"\temp_image";
+        static string csv_input;
+        static string xlsx_output;
+        static string Logo_path;
+        static string Word_output;
+        static List<string> Word_report_template_file;
+
+        static readonly string Report_Template_folder = Environment.CurrentDirectory + @"\template\";
+        static readonly string img_temp = Environment.CurrentDirectory + @"\temp_image";
         static object misValue = System.Reflection.Missing.Value;
         static object oFalse = false;
         static object oTrue = true;
+        static string Report_Type;
 
         // image template name , do not touch
         static string url_PriceNight = @"\priceNight.png";
@@ -54,57 +57,117 @@ namespace RvAutoReport
         static string url_AvgDailyPriceNight = @"\AvgDailyPriceNight.png";
         static string url_AcAhTable = @"\AcAH.png";
         static string url_cityMap = @"\CityMap.png";
+
         static List<string> list_image_url = new List<string>();
         public System.Threading.CancellationTokenSource TokenSource;
-        public DateTime Start_time ;
+        public DateTime Start_time;
 
         //  for new version // due to bug at export map image so not yet using these
         //public string ExcelPath = @"";
         public DataTable Excel_data;
         //public List<string> list_image_url = new List<string>();
-        DataTable DataForWordReport = new DataTable (){ TableName  = "DataForWOrdReport" };
+        DataTable DataForWordReport = new DataTable() { TableName = "DataForWOrdReport" };
         public readonly string DataXmlPath = "Data.xml";
         public readonly string ConfigXmlPath = "Config.xml";
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            txt_xlsxPath.Text = xlsx_output ;
-            txt_DocxOutPutPath.Text = Word_output;
-            txt_csvPath.Text = csv_input;
 
-            // load saved config data from config xml file if  file is existing
-            if (File.Exists(ConfigXmlPath))
+            Word_report_template_file = new List<string>();
+
+            string[] files = GetFileNamesFromFolder(Report_Template_folder, "*.docx");
+
+            if (files.Length > 0)
             {
-                DataSet dtset = new DataSet();
-                dtset.ReadXml(ConfigXmlPath);
-
-                DataTable LoadFromXml = dtset.Tables[0];
-
-                if (LoadFromXml.Rows.Count > 0)
+                cbb_SelectReport.DataSource = files;
+                cbb_SelectReport.SelectedText = files.FirstOrDefault();
+            }
+            try
+            {
+                // load saved config data from config xml file if  file is existing
+                WriteLog("Loading Config file");
+                if (File.Exists(ConfigXmlPath))
                 {
-                    txt_csvPath.Text = LoadFromXml.AsEnumerable().Where(row => row.Field<string>("CONFIG") == "CSV_PATH")
-                        .Select(rn => rn.Field<string>("VALUE")).FirstOrDefault().ToString();
-                    txt_xlsxPath.Text = LoadFromXml.AsEnumerable().Where(row => row.Field<string>("CONFIG") == "XLSX_PATH")
-                        .Select(rn => rn.Field<string>("VALUE")).FirstOrDefault().ToString();
-                    txt_DocxOutPutPath.Text = LoadFromXml.AsEnumerable().Where(row => row.Field<string>("CONFIG") == "DOCX_OUTPUT").Select(rn => rn.Field<string>("VALUE"))
-                        .FirstOrDefault().ToString();
-                    txt_docxTemp.Text = LoadFromXml.AsEnumerable().Where(row => row.Field<string>("CONFIG") == "DOC_TEMP_NAME").Select(rn => rn.Field<string>("VALUE"))
-                        .FirstOrDefault().ToString();
+                    DataSet dtset = new DataSet();
+                    dtset.ReadXml(ConfigXmlPath);
 
+                    DataTable LoadFromXml = dtset.Tables[0];
 
-                    // replace input & output location
-                    xlsx_output = txt_xlsxPath.Text;
-                    Word_output = txt_DocxOutPutPath.Text;
-                    csv_input = txt_csvPath.Text;
-                   
+                    if (LoadFromXml.Rows.Count > 0)
+                    {
+
+                        for (int i = 0; i < LoadFromXml.Rows.Count; i++)
+                        {
+                            string Config = LoadFromXml.Rows[i].Field<string>("CONFIG");
+                            switch (Config)
+                            {
+                                case "CSV_PATH":
+
+                                    csv_input = LoadFromXml.Rows[i].Field<string>("VALUE");
+                                    txt_csvInput.Text = csv_input;
+                                    break;
+
+                                case "XLSX_PATH":
+                                    xlsx_output = LoadFromXml.Rows[i].Field<string>("VALUE");
+                                    txt_xlsxOutput.Text = xlsx_output;
+                                    break;
+
+                                case "DOCX_OUTPUT":
+                                    Word_output = LoadFromXml.Rows[i].Field<string>("VALUE");
+                                    txt_docxOutPut.Text = Word_output;
+                                    break;
+
+                                case "LOGO_PATH":
+                                    Logo_path = LoadFromXml.Rows[i].Field<string>("VALUE");
+                                    txt_logopath.Text = Logo_path;
+                                    break;
+
+                                case "ISMULTIREPORT":
+                                    if (bool.Parse(LoadFromXml.Rows[i].Field<string>("VALUE")))
+                                    {
+
+                                        rd_runAllReport.Checked = true;
+                                    }
+                                    else
+                                    {
+                                        rd_runOneReport.Checked = true;
+                                    }
+
+                                    break;
+                            }
+
+                        }
+
+                    }
+                }
+
+                else
+                {
+                    WriteLog("File Setting not found, Please change the settings manualy");
                 }
             }
+            catch (Exception ex)
+            {
+                WriteLog("Error Load Config, Please check the setting , re-config, save the retart the app");
+                WriteLog(ex.ToString());
+            }
 
-            Word_report_template_file = Word_report_template_file + txt_docxTemp.Text;
 
-           
+        }
 
-
+        private string[] GetFileNamesFromFolder(string folderPath, string pattern)
+        {
+            if (Directory.Exists(folderPath))
+            {
+                return Directory.GetFiles(folderPath, pattern)
+                                .Select(Path.GetFileName).Where(file => !file.StartsWith("~"))
+                                .ToArray();
+            }
+            else
+            {
+                Console.WriteLine("The specified folder does not exist.");
+                return new string[0]; // Return an empty array if the folder does not exist
+            }
         }
 
 
@@ -382,13 +445,58 @@ namespace RvAutoReport
 
         private void button3_Click(object sender, EventArgs e)
         {
-       
-            //save Gridview to datatable
-            DataForWordReport = GetDataTableFromDataGridView(dGVDataWFromXl);
-            //save to file
-            File.Delete(DataXmlPath);
-            DataForWordReport.TableName = "DataForWOrdReport";
-            DataForWordReport.WriteXml(DataXmlPath);
+            if (!string.IsNullOrEmpty(txt_xlsxOutput.Text) && !string.IsNullOrEmpty(txt_csvInput.Text) && !string.IsNullOrEmpty(txt_docxOutPut.Text) && !string.IsNullOrEmpty(txt_logopath.Text))
+            {
+                try
+                {
+                    Word_report_template_file.Clear();
+                    csv_input = txt_csvInput.Text;
+                    xlsx_output = txt_xlsxOutput.Text;
+                    Word_output = txt_docxOutPut.Text;
+                    Logo_path = txt_logopath.Text;
+
+                    // save the config file
+                    File.Delete(ConfigXmlPath);
+                    DataTable Config = new DataTable();
+                    Config.TableName = "Config";
+                    Config.Columns.Add("CONFIG");
+                    Config.Columns.Add("VALUE");
+                    Config.Rows.Add("XLSX_PATH", txt_xlsxOutput.Text);
+                    Config.Rows.Add("CSV_PATH", txt_csvInput.Text);
+                    Config.Rows.Add("DOCX_OUTPUT", txt_docxOutPut.Text);
+                    Config.Rows.Add("MAP_CIRCLE_DIA", txt_circleDiameter.Text);
+                    Config.Rows.Add("LOGO_PATH", txt_logopath.Text);
+
+                    if (rd_runAllReport.Checked)
+                    {
+                        Config.Rows.Add("ISMULTIREPORT", true);
+
+                    }
+                    else
+                    {
+                        Config.Rows.Add("ISMULTIREPORT", false);
+
+                    }
+                    Config.WriteXml(ConfigXmlPath);
+                    MessageBox.Show("Success !!!");
+                }
+                catch
+                {
+                    MessageBox.Show("Unknow error");
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("Please Input All Fields");
+            }
+
+
+
+            // reload variable
+
+
+
         }
 
         #region Copy From preview Script
@@ -398,15 +506,21 @@ namespace RvAutoReport
             ChangeCotrolStatus(false);
             WriteLog("Kill Excel , Word instance");
             KillWordAndExcelProcesses();
-            if (!File.Exists(Word_report_template_file))
+
+            foreach (string item in Word_report_template_file)
             {
-                WriteLog("Word Template not found! Please check again ");
-                return;
+                if (!File.Exists(Report_Template_folder + item))
+                {
+                    WriteLog("Word Template not found! Please check again ");
+                    return;
+                }
             }
-                
+
+
+
 
             string[] files = Directory.GetFiles(xlsx_output, "*.xlsx");
-            if(files.Length >0)
+            if (files.Length > 0)
             {
                 WriteLog("Start Loop All file xlsx in folder");
 
@@ -458,8 +572,8 @@ namespace RvAutoReport
             {
                 WriteLog("No File !!");
             }
-            
-         
+
+
 
         }
 
@@ -532,13 +646,13 @@ namespace RvAutoReport
                         markers.Markers.Add(marker);
                         gmap.Overlays.Add(markers);
 
-                    }                          
+                    }
                     gmap.Position = new GMap.NET.PointLatLng(AvgLat, AvgLong);
                     gmap.Refresh();
                 }
             ));
             }
-         
+
         }
 
         private static void Insert_chart(Excel.Worksheet xlWorkSheet, string chart_range_start, string chart_range_end, int total_line, string chart_name, string serie_name, Excel.XlChartType chartType
@@ -644,9 +758,9 @@ namespace RvAutoReport
 
         }
 
-        private  void ReadExcel(string ExcelPath)
-        { 
-            
+        private void ReadExcel(string ExcelPath)
+        {
+
             Excel.Application xlApp;
             Excel.Workbook xlWorkBook;
             Excel.Worksheet xlWorkSheet;
@@ -703,7 +817,7 @@ namespace RvAutoReport
                     list_image_url.Clear();
 
                     // get the RvType
-                    string SheetName = shittt.Name.Replace("stat-", "");                
+                    string SheetName = shittt.Name.Replace("stat-", "");
                     string RvType = string.Empty;
 
                     // add class to Rv Type
@@ -715,7 +829,7 @@ namespace RvAutoReport
                     {
                         RvType = SheetName;
                     }
-                    WriteLog("RvType : "+ RvType);
+                    WriteLog("RvType : " + RvType);
 
                     // create folder for template image file
                     string FolderPath = img_temp + @"\" + RvType;
@@ -738,7 +852,7 @@ namespace RvAutoReport
                     var checkifemptydata = Data.AsEnumerable()
                     .Where(row => !row.IsNull("LATITUDE") && !row.IsNull("LONGITUDE"));
 
-                    if(checkifemptydata.Any())
+                    if (checkifemptydata.Any())
                     {
                         RvData = checkifemptydata.CopyToDataTable();
                     }
@@ -771,7 +885,7 @@ namespace RvAutoReport
                             WriteLog("Map image exported");
 
                         }));
-                       
+
                     }
                     else
                     {
@@ -786,12 +900,12 @@ namespace RvAutoReport
                     WriteLog(" get List top 5 Maker Name");
 
                     List<string> Top5MakerandModel = Data.AsEnumerable()
-                                        .Select((row) =>  row.Field<string>("MAKE") )
+                                        .Select((row) => row.Field<string>("MAKE"))
                                         .Distinct().Take(5)
                                         .ToList();
-                    for(int i  = 0; i < Top5MakerandModel.Count; i++ )
+                    for (int i = 0; i < Top5MakerandModel.Count; i++)
                     {
-                        Top5MakerandModel[i] = (i +1).ToString() +". " + Top5MakerandModel[i];
+                        Top5MakerandModel[i] = (i + 1).ToString() + ". " + Top5MakerandModel[i];
                     }
 
                     DataRow dtrow = DataForWordReport.NewRow();
@@ -868,7 +982,7 @@ namespace RvAutoReport
 
                     //Future utilization 60 Days
                     data = xlWorkSheet.Cells[20, 2].Value.ToString();
-                    DataForWordReport.Rows.Add("<FUTURE_UTI_60>", (double.Parse(xlWorkSheet.Cells[20, 2].Value.ToString()) * 100)+ "%");
+                    DataForWordReport.Rows.Add("<FUTURE_UTI_60>", (double.Parse(xlWorkSheet.Cells[20, 2].Value.ToString()) * 100) + "%");
 
                     //Future utilization 90 Days
                     data = xlWorkSheet.Cells[21, 2].Value.ToString();
@@ -886,25 +1000,25 @@ namespace RvAutoReport
 
                     DataTable Data2 = Data.DefaultView.ToTable();
 
-                    double AvgTop5NightlyPrice = Math.Round( Data2.AsEnumerable().Take(5).Select(row => row.Field<double>("PRICE/NIGHT")).Average(),2) ;
+                    double AvgTop5NightlyPrice = Math.Round(Data2.AsEnumerable().Take(5).Select(row => row.Field<double>("PRICE/NIGHT")).Average(), 2);
 
                     DataForWordReport.Rows.Add("<AVG_NP_TOP5>", AvgTop5NightlyPrice);
 
                     //  Average nightly price calculation for last table
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_025>", Math.Round(AvgTop5NightlyPrice * ( 0.25 * 365 ) ));
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_025>", Math.Round(AvgTop5NightlyPrice * (0.25 * 365)));
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_026>", Math.Round(AvgTop5NightlyPrice *  (0.26 * 365) ));
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_026>", Math.Round(AvgTop5NightlyPrice * (0.26 * 365)));
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_050>", Math.Round(AvgTop5NightlyPrice * ( 0.50 * 365 ) ));
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_050>", Math.Round(AvgTop5NightlyPrice * (0.50 * 365)));
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_051>", Math.Round(AvgTop5NightlyPrice * ( 0.51 * 365 )));
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_051>", Math.Round(AvgTop5NightlyPrice * (0.51 * 365)));
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_075>", Math.Round(AvgTop5NightlyPrice * ( 0.75 * 365 )));
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_075>", Math.Round(AvgTop5NightlyPrice * (0.75 * 365)));
 
                     DataForWordReport.Rows.Add("<AVG_NP_TOP5_076>", Math.Round(AvgTop5NightlyPrice * (0.76 * 365)));
 
-                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_100>", Math.Round(AvgTop5NightlyPrice * 365 ) );
+                    DataForWordReport.Rows.Add("<AVG_NP_TOP5_100>", Math.Round(AvgTop5NightlyPrice * 365));
 
 
 
@@ -933,7 +1047,7 @@ namespace RvAutoReport
                     // insert totalRVcount chart to excel
 
                     Insert_chart(xlWorkSheet, "AB", "AC", (1 + RvCountGroupByType.Rows.Count), "TOTAL RVs Count"
-                        , "RV Count", XlChartType.xlBarClustered, 5, 650, 500, 300, FolderPath, url_numberofRVs, Office.MsoThemeColorIndex.msoThemeColorLight1, Color.Black, Excel.XlRgbColor.rgbBlack);
+                        , "RV Count", XlChartType.xl3DColumnClustered, 5, 650, 500, 300, FolderPath, url_numberofRVs, Office.MsoThemeColorIndex.msoThemeColorLight1, Color.Black, Excel.XlRgbColor.rgbBlack);
 
                     WriteLog("Created Chart for totalRVcount ");
 
@@ -1009,7 +1123,7 @@ namespace RvAutoReport
                     }
                     Insert_chart(xlWorkSheet, "AF", "AG", (1 + avg_daily_pricenight.Rows.Count), "Average Price / Night"
                      , "Price/Night", XlChartType.xlBarClustered, 5, 1250, 500, 300, FolderPath, url_AvgDailyPriceNight, Office.MsoThemeColorIndex.msoThemeColorLight1, Color.Black, Excel.XlRgbColor.rgbBlack, "$");
-                   
+
                     WriteLog("Created Chart for  Average Daily Price/Night  ");
                     #endregion
 
@@ -1022,17 +1136,17 @@ namespace RvAutoReport
 
                     DataTable dt_forAttributes = null;
                     var Checkdt_forAttribute = Data.AsEnumerable().Take(25);
-                    if(Checkdt_forAttribute.Any())
+                    if (Checkdt_forAttribute.Any())
                     {
                         dt_forAttributes = Checkdt_forAttribute.CopyToDataTable();
                     }
-                    if(dt_forAttributes != null)
+                    if (dt_forAttributes != null)
                     {
                         double Top25PETFRIENDELY = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("PET FRIENDELY")) / dt_forAttributes.Rows.Count;
                         double Top25TAILGATEFRIENDELY = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("TAILGATE FRIENDELY")) / dt_forAttributes.Rows.Count;
                         double Top25SMOKINGALLOWED = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("SMOKING ALLOWED")) / dt_forAttributes.Rows.Count;
                         double Top25FESTIVALFRIENDLY = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("FESTIVAL FRIENDLY")) / dt_forAttributes.Rows.Count;
-                        double Top25GENERATOR = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("GENERATOR")) / dt_forAttributes.Rows.Count;                     
+                        double Top25GENERATOR = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("GENERATOR")) / dt_forAttributes.Rows.Count;
                         AcAHTable.Rows.Add("PET FRIENDELY", Top25PETFRIENDELY);
                         AcAHTable.Rows.Add("TAILGATE FRIENDELY", Top25TAILGATEFRIENDELY);
                         AcAHTable.Rows.Add("SMOKING ALLOWED", Top25SMOKINGALLOWED);
@@ -1047,7 +1161,7 @@ namespace RvAutoReport
                         AcAHTable.Rows.Add("FESTIVAL FRIENDLY", 0);
                         AcAHTable.Rows.Add("GENERATOR", 0);
                     }
-                    
+
 
 
                     // insert data to excel
@@ -1111,10 +1225,10 @@ namespace RvAutoReport
 
                     #endregion
 
-                    foreach(string rv in Top5MakerandModel)
+                    foreach (string rv in Top5MakerandModel)
                     {
-                        string LogoLocation = Logo_path + rv.Substring(2).Trim() + ".png";
-                        if(File.Exists(LogoLocation))
+                        string LogoLocation = Logo_path + @"\" + rv.Substring(2).Trim() + ".png";
+                        if (File.Exists(LogoLocation))
                         {
                             list_image_url.Add(LogoLocation);
                         }
@@ -1141,10 +1255,28 @@ namespace RvAutoReport
                         }
                     }
 
-                   
+
                     WriteLog("Generating Word report ");
                     // generate docx report file
-                    Generate_Word_Report(RvType, xlWorkBook.Name.Replace(".xlsx", ""), DataForWordReport, Top5MakerandModel, DocFileName);
+
+                    foreach (string reportFile in Word_report_template_file)
+                    {
+                        Report_Type = reportFile.Replace(".docx", "");
+                        string TemplateFile = Report_Template_folder + reportFile;
+                        Generate_Word_Report(RvType, xlWorkBook.Name.Replace(".xlsx", ""), DataForWordReport, Top5MakerandModel, DocFileName, TemplateFile);
+
+                    }
+
+
+                    string[] Img_file = Directory.GetDirectories(img_temp);
+                    foreach (string file in Img_file)
+                    {
+                        Directory.Delete(file, true);
+                    }
+
+
+                    WriteLog("Cleaned template Image");
+
                     // release excel work sheet
                     releaseObject(xlWorkSheet);
                 }
@@ -1155,7 +1287,7 @@ namespace RvAutoReport
             xlApp.Quit();
             // release work app
             releaseObject(xlWorkBook);
-            releaseObject(xlApp);   
+            releaseObject(xlApp);
             WriteLog("Saved Excel Work book");
             KillWordAndExcelProcesses();
         }
@@ -1183,28 +1315,26 @@ namespace RvAutoReport
             }
         }
 
-        private  void Generate_Word_Report(string SaveFolderName, string Xlsx_file_name, DataTable excelcalculation, List<string> Top5Maker, string DocxFileName)
+        private void Generate_Word_Report(string SaveFolderName, string Xlsx_file_name, DataTable excelcalculation, List<string> Top5Maker, string DocxFileName, string WordFile)
         {
             // get image chart temp folder for each rv type
             string Imgsavefolder = img_temp + @"\" + SaveFolderName;
 
             // check if output folder is existing or not and create if not
-            if (!Directory.Exists(Word_output))
-                Directory.CreateDirectory(Word_output);
+            string OutputFolder = Word_output + @"\" + Report_Type + @"\" + Xlsx_file_name;
+            if (!Directory.Exists(OutputFolder))
+                Directory.CreateDirectory(OutputFolder);
 
-            if (!Directory.Exists(Word_output + @"\" + Xlsx_file_name))
-                Directory.CreateDirectory(Word_output + @"\" + Xlsx_file_name);
-
-            // generate docx file
-            string docsaveLocation = Word_output + @"\" + Xlsx_file_name + @"\" + DocxFileName;
+            // generate docx file name
+            string docsaveLocation = OutputFolder + @"\" + DocxFileName;
             WORD.Application wordApp = new WORD.Application();
 
-            Document document = wordApp.Documents.Open(Word_report_template_file);
+            Document document = wordApp.Documents.Open(WordFile);
 
 
             // insert logo
 
-            
+
             if (list_image_url.Count > 0)
             {
                 Insert_Image_Chart("<INSERT_LOGO>", document, wordApp, list_image_url);
@@ -1227,7 +1357,7 @@ namespace RvAutoReport
 
             string TargetSave_CityMap = Imgsavefolder + url_cityMap;
             // 
-            if(File.Exists(TargetSave_CityMap)) // case map is existing
+            if (File.Exists(TargetSave_CityMap)) // case map is existing
             {
                 Insert_Image_Chart("<CITY_MAP>", document, wordApp, TargetSave_CityMap);
                 WriteLog("Inserted City Map");
@@ -1283,14 +1413,7 @@ namespace RvAutoReport
             // clear image for next run
 
             WriteLog("Docx saved at :" + docsaveLocation);
-            string[] Img_file = Directory.GetDirectories(img_temp);
-            foreach(string file in Img_file)
-            {
-               Directory.Delete(file, true);
-            }
-   
 
-            WriteLog("Clean template Image");
 
         }
 
@@ -1465,7 +1588,7 @@ namespace RvAutoReport
 
         private void btn_openOutPut_Click(object sender, EventArgs e)
         {
-            Process.Start("explorer.exe", txt_DocxOutPutPath.Text);
+            Process.Start("explorer.exe", txt_docxOutPut.Text);
         }
 
         private void ChildForm_DataTableReturned(object sender, DataTableEventArgs e)
@@ -1473,73 +1596,73 @@ namespace RvAutoReport
             DataTable returnedDataTable = e.DataTable;
 
             //should put the power automate here
-                this.Invoke(new MethodInvoker(delegate ()
+            this.Invoke(new MethodInvoker(delegate ()
+            {
+                gmap.MaxZoom = 18;
+                gmap.MinZoom = 2;
+                gmap.Zoom = 8;
+                gmap.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
+                GMap.NET.GMaps.Instance.Mode = GMap.NET.AccessMode.ServerOnly;
+
+                //DataTable LatLongData = new DataTable();
+                //LatLongData.Columns.Add("LAT", typeof(double));
+                //LatLongData.Columns.Add("LONG", typeof(double));
+                //LatLongData.Rows.Add(33.588, -112.152);
+
+                // avg lat long
+                double AvgLat = returnedDataTable.AsEnumerable().Average(row => row.Field<double>("LAT"));
+                double AvgLong = returnedDataTable.AsEnumerable().Average(row => row.Field<double>("LONG"));
+
+
+                int numberOfPoints = 100;
+
+                // convert from mile to meter
+                double radiusInMeters = Double.Parse(txt_circleDiameter.Text) * 1609.344;
+
+                List<GMap.NET.PointLatLng> circlePoints = new List<GMap.NET.PointLatLng>();
+                double angle = 2 * Math.PI / numberOfPoints;
+                for (int i = 0; i < numberOfPoints; i++)
                 {
-                    gmap.MaxZoom = 18;
-                    gmap.MinZoom = 2;
-                    gmap.Zoom = 8;
-                    gmap.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
-                    GMap.NET.GMaps.Instance.Mode = GMap.NET.AccessMode.ServerOnly;
-
-                    //DataTable LatLongData = new DataTable();
-                    //LatLongData.Columns.Add("LAT", typeof(double));
-                    //LatLongData.Columns.Add("LONG", typeof(double));
-                    //LatLongData.Rows.Add(33.588, -112.152);
-
-                    // avg lat long
-                    double AvgLat = returnedDataTable.AsEnumerable().Average(row => row.Field<double>("LAT"));
-                    double AvgLong = returnedDataTable.AsEnumerable().Average(row => row.Field<double>("LONG"));
-
-
-                    int numberOfPoints = 100;
-
-                    // convert from mile to meter
-                    double radiusInMeters = Double.Parse(txt_circleDiameter.Text) * 1609.344;
-
-                    List<GMap.NET.PointLatLng> circlePoints = new List<GMap.NET.PointLatLng>();
-                    double angle = 2 * Math.PI / numberOfPoints;
-                    for (int i = 0; i < numberOfPoints; i++)
-                    {
-                        double lat = AvgLat + radiusInMeters / 111320d * Math.Sin(i * angle);
-                        double lng = AvgLong + radiusInMeters / (111320d * Math.Cos(AvgLat * Math.PI / 180)) * Math.Cos(i * angle);
-                        circlePoints.Add(new GMap.NET.PointLatLng(lat, lng));
-                    }
-
-                    GMap.NET.WindowsForms.GMapOverlay Overlay = new GMap.NET.WindowsForms.GMapOverlay("Overlay");
-                    GMap.NET.WindowsForms.GMapPolygon circle = new GMap.NET.WindowsForms.GMapPolygon(circlePoints, "circle");
-
-                    circle.Fill = new SolidBrush(Color.FromArgb(30, Color.Blue));  // Fill color
-                    circle.Stroke = new Pen(Color.Blue, 1);
-
-                    Overlay.Polygons.Add(circle);
-
-                    gmap.Overlays.Add(Overlay);
-
-                    // Create a GMapMarker for the center
-
-                    // Add the marker to the overlay              
-
-
-                    // add all location to overlay
-                    foreach (DataRow dtrow in returnedDataTable.Rows)
-                    {
-                        GMap.NET.WindowsForms.GMapOverlay markers = new GMap.NET.WindowsForms.GMapOverlay("markers");
-                        //GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
-                        //                                                new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
-                        //                                                            GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
-                        //Overlay = new GMap.NET.WindowsForms.GMapOverlay("markers");
-                        GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
-                                                                        new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
-                                                                                    GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
-                        markers.Markers.Add(marker);
-                        gmap.Overlays.Add(markers);
-
-                    }
-
-
-                    gmap.Position = new GMap.NET.PointLatLng(AvgLat, AvgLong);
+                    double lat = AvgLat + radiusInMeters / 111320d * Math.Sin(i * angle);
+                    double lng = AvgLong + radiusInMeters / (111320d * Math.Cos(AvgLat * Math.PI / 180)) * Math.Cos(i * angle);
+                    circlePoints.Add(new GMap.NET.PointLatLng(lat, lng));
                 }
-            ));
+
+                GMap.NET.WindowsForms.GMapOverlay Overlay = new GMap.NET.WindowsForms.GMapOverlay("Overlay");
+                GMap.NET.WindowsForms.GMapPolygon circle = new GMap.NET.WindowsForms.GMapPolygon(circlePoints, "circle");
+
+                circle.Fill = new SolidBrush(Color.FromArgb(30, Color.Blue));  // Fill color
+                circle.Stroke = new Pen(Color.Blue, 1);
+
+                Overlay.Polygons.Add(circle);
+
+                gmap.Overlays.Add(Overlay);
+
+                // Create a GMapMarker for the center
+
+                // Add the marker to the overlay              
+
+
+                // add all location to overlay
+                foreach (DataRow dtrow in returnedDataTable.Rows)
+                {
+                    GMap.NET.WindowsForms.GMapOverlay markers = new GMap.NET.WindowsForms.GMapOverlay("markers");
+                    //GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
+                    //                                                new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
+                    //                                                            GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
+                    //Overlay = new GMap.NET.WindowsForms.GMapOverlay("markers");
+                    GMap.NET.WindowsForms.GMapMarker marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(
+                                                                    new GMap.NET.PointLatLng(dtrow.Field<double>("lat"), dtrow.Field<double>("long")),
+                                                                                GMap.NET.WindowsForms.Markers.GMarkerGoogleType.red_small);
+                    markers.Markers.Add(marker);
+                    gmap.Overlays.Add(markers);
+
+                }
+
+
+                gmap.Position = new GMap.NET.PointLatLng(AvgLat, AvgLong);
+            }
+        ));
 
 
         }
@@ -1557,7 +1680,7 @@ namespace RvAutoReport
             latLongForm.ShowDialog();
 
 
-           
+
 
 
         }
@@ -1574,25 +1697,13 @@ namespace RvAutoReport
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            File.Delete(ConfigXmlPath);
-            DataTable Config = new DataTable();
-            Config.TableName = "Config";
-            Config.Columns.Add("CONFIG");
-            Config.Columns.Add("VALUE");
-            Config.Rows.Add("XLSX_PATH", txt_xlsxPath.Text);
-            Config.Rows.Add("CSV_PATH", txt_csvPath.Text);
-            Config.Rows.Add("DOC_TEMP_NAME", txt_docxTemp.Text);
-            Config.Rows.Add("DOCX_OUTPUT", txt_DocxOutPutPath.Text);
-            Config.Rows.Add("MAP_CIRCLE_DIA", txt_circleDiameter.Text);
-            Config.Rows.Add("USER_NAME", txt_UserName.Text);
 
-            Config.WriteXml(ConfigXmlPath);
             try
             {
-                if(TokenSource !=null)
-                TokenSource.Cancel();
+                if (TokenSource != null)
+                    TokenSource.Cancel();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -1602,25 +1713,25 @@ namespace RvAutoReport
         {
             int OverLayCount = gmap.Overlays.Count;
             if (OverLayCount > 0)
-            {             
-                foreach( GMapOverlay overlay in gmap.Overlays.ToList() )
+            {
+                foreach (GMapOverlay overlay in gmap.Overlays.ToList())
                 {
                     gmap.Overlays.Remove(overlay);
                     gmap.Refresh();
-                }    
-              
+                }
+
 
             }
 
-           
+
 
         }
 
-        private void ChangeCotrolStatus( bool status)
+        private void ChangeCotrolStatus(bool status)
         {
-            foreach(Control ctrl in tabPage1.Controls)
+            foreach (Control ctrl in tabPage1.Controls)
             {
-                if(ctrl.GetType() == typeof(Button))
+                if (ctrl.GetType() == typeof(Button))
                 {
                     ctrl.Enabled = status;
                 }
@@ -1633,7 +1744,7 @@ namespace RvAutoReport
             ChangeCotrolStatus(false);
             string[] files = Directory.GetFiles(csv_input, "*.csv");
 
-            if(files.Length > 0)
+            if (files.Length > 0)
             {
                 WriteLog("Start Loop All file csv in folder");
 
@@ -1644,27 +1755,27 @@ namespace RvAutoReport
                 {
                     //try
                     //{
-                        Start_time = DateTime.Now;
-                        foreach (string file in files)
+                    Start_time = DateTime.Now;
+                    foreach (string file in files)
+                    {
+                        if (!file.Contains("~$")) // ignore the excel temp file
                         {
-                            if (!file.Contains("~$")) // ignore the excel temp file
+
+                            CSVtoXlsx(file);
+
+                            if (token.IsCancellationRequested)
                             {
-
-                                CSVtoXlsx(file);
-
-                                if (token.IsCancellationRequested)
-                                {
-                                    token.ThrowIfCancellationRequested();
-                                }
+                                token.ThrowIfCancellationRequested();
                             }
                         }
-                        WriteLog("Elapsed Time : " + Math.Round((DateTime.Now - Start_time).TotalSeconds));
-                        WriteLog("DONE!!!!!!!!!");
-                        this.Invoke(new MethodInvoker(delegate
-                        {
-                            ChangeCotrolStatus(true);
-                        }
-                        ));
+                    }
+                    WriteLog("Elapsed Time : " + Math.Round((DateTime.Now - Start_time).TotalSeconds));
+                    WriteLog("DONE!!!!!!!!!");
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        ChangeCotrolStatus(true);
+                    }
+                    ));
 
                     //}
                     //catch (OperationCanceledException) { }
@@ -1686,7 +1797,7 @@ namespace RvAutoReport
             {
                 WriteLog("No file!");
             }
-          
+
 
         }
 
@@ -1881,12 +1992,12 @@ namespace RvAutoReport
 
                     DataTable dtFor_Potential = null;
                     var Check = rvData.AsEnumerable().OrderByDescending(row => decimal.Parse(row.Field<string>("UTIL 2022"))).Where(Row => Row.Field<string>("UTIL 2022") != "0");
-                      
-                    if(Check.Any())
+
+                    if (Check.Any())
                     {
                         dtFor_Potential = Check.CopyToDataTable();
                     }
-                    if(dtFor_Potential!=null)
+                    if (dtFor_Potential != null)
                     {
                         dtFor_Potential = dtFor_Potential.AsEnumerable().Take(5).CopyToDataTable();
                         // avg of Top5 Ulti2022
@@ -1902,7 +2013,7 @@ namespace RvAutoReport
 
                     WriteLog("start calculated data  to sheet " + NewSheetStat.Name);
                     // write data to stat worksheet
-                    WriteDataTableToExcelSheet(NewSheetStat, xlData, 1, 1,false);
+                    WriteDataTableToExcelSheet(NewSheetStat, xlData, 1, 1, false);
 
                     Excel.Range columnRange = NewSheetStat.Columns[1];
                     columnRange.EntireColumn.AutoFit();
@@ -1923,7 +2034,7 @@ namespace RvAutoReport
         static void WriteDataTableToExcelSheet(Worksheet worksheet, DataTable dataTable, int startRow, int startColumn, bool isWriteHeader = true)
         {
             // Write the column headers to the worksheet
-            if(isWriteHeader)
+            if (isWriteHeader)
             {
                 for (int col = 0; col < dataTable.Columns.Count; col++)
                 {
@@ -1932,20 +2043,20 @@ namespace RvAutoReport
                 startRow = startRow + 1;
             }
 
-            
+
 
             // Write the data rows to the worksheet
             for (int row = 0; row < dataTable.Rows.Count; row++)
             {
                 for (int col = 0; col < dataTable.Columns.Count; col++)
                 {
-                    worksheet.Cells[startRow + row , startColumn + col] = dataTable.Rows[row][col];
+                    worksheet.Cells[startRow + row, startColumn + col] = dataTable.Rows[row][col];
                 }
             }
         }
 
 
-        private DataTable LoadCSV (string filePath)
+        private DataTable LoadCSV(string filePath)
         {
             DataTable dataTable = new DataTable();
 
@@ -1971,6 +2082,70 @@ namespace RvAutoReport
             }
 
             return dataTable;
+        }
+
+        private void rd_runAllReport_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rd_runAllReport.Checked == true)
+            {
+                // load all docx file from template folder 
+                cbb_SelectReport.Enabled = false;
+                Word_report_template_file.Clear();
+                string[] files = GetFileNamesFromFolder(Report_Template_folder, "*.docx");
+                if (files.Length > 0)
+                {
+                    WriteLog("Mutlti report mode");
+                    foreach (string DocFile in files)
+                    {
+
+                        if (!DocFile.StartsWith("~"))
+                        {
+                            Word_report_template_file.Add(DocFile);
+                            WriteLog("Report File : " + DocFile);
+                        }
+
+                    }
+                }
+                else
+                {
+                    WriteLog("WARNING : Not found any Report !!! , please put atleast one report at the template Folder ");
+                }
+
+
+            }
+            else
+            {
+                rd_runOneReport.Checked = true;
+
+
+
+            }
+        }
+
+        private void rd_runOneReport_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rd_runOneReport.Checked == true)
+            {
+                WriteLog("Single report mode");
+                Word_report_template_file.Clear();
+
+                Word_report_template_file.Add(cbb_SelectReport.SelectedItem.ToString());
+                WriteLog("Report File : " + cbb_SelectReport.SelectedItem.ToString());
+                cbb_SelectReport.Enabled = true;
+            }
+
+
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
