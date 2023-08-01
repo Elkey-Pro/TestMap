@@ -60,10 +60,10 @@
             this.txt_circleDiameter = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
+            this.btn_LoadCsvPath = new System.Windows.Forms.Button();
+            this.btn_LoadXlsxPath = new System.Windows.Forms.Button();
+            this.btn_LoadDocxPath = new System.Windows.Forms.Button();
+            this.btn_LoadLogoPath = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
@@ -274,10 +274,10 @@
             this.groupBox2.Controls.Add(this.label12);
             this.groupBox2.Controls.Add(this.label11);
             this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.button10);
-            this.groupBox2.Controls.Add(this.button9);
-            this.groupBox2.Controls.Add(this.button8);
-            this.groupBox2.Controls.Add(this.button7);
+            this.groupBox2.Controls.Add(this.btn_LoadLogoPath);
+            this.groupBox2.Controls.Add(this.btn_LoadDocxPath);
+            this.groupBox2.Controls.Add(this.btn_LoadXlsxPath);
+            this.groupBox2.Controls.Add(this.btn_LoadCsvPath);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.txt_circleDiameter);
@@ -353,6 +353,7 @@
             this.txt_csvInput.Name = "txt_csvInput";
             this.txt_csvInput.Size = new System.Drawing.Size(251, 20);
             this.txt_csvInput.TabIndex = 7;
+            this.txt_csvInput.TextChanged += new System.EventHandler(this.txt_csvInput_TextChanged);
             // 
             // txt_xlsxOutput
             // 
@@ -360,6 +361,7 @@
             this.txt_xlsxOutput.Name = "txt_xlsxOutput";
             this.txt_xlsxOutput.Size = new System.Drawing.Size(251, 20);
             this.txt_xlsxOutput.TabIndex = 8;
+            this.txt_xlsxOutput.TextChanged += new System.EventHandler(this.txt_xlsxOutput_TextChanged);
             // 
             // txt_docxOutPut
             // 
@@ -367,6 +369,7 @@
             this.txt_docxOutPut.Name = "txt_docxOutPut";
             this.txt_docxOutPut.Size = new System.Drawing.Size(251, 20);
             this.txt_docxOutPut.TabIndex = 9;
+            this.txt_docxOutPut.TextChanged += new System.EventHandler(this.txt_docxOutPut_TextChanged);
             // 
             // txt_logopath
             // 
@@ -374,6 +377,7 @@
             this.txt_logopath.Name = "txt_logopath";
             this.txt_logopath.Size = new System.Drawing.Size(251, 20);
             this.txt_logopath.TabIndex = 10;
+            this.txt_logopath.TextChanged += new System.EventHandler(this.txt_logopath_TextChanged);
             // 
             // label4
             // 
@@ -412,41 +416,45 @@
             this.label6.TabIndex = 50;
             this.label6.Text = "CSV Input Path";
             // 
-            // button7
+            // btn_LoadCsvPath
             // 
-            this.button7.Location = new System.Drawing.Point(133, 98);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(31, 23);
-            this.button7.TabIndex = 51;
-            this.button7.Text = "...";
-            this.button7.UseVisualStyleBackColor = true;
+            this.btn_LoadCsvPath.Location = new System.Drawing.Point(133, 98);
+            this.btn_LoadCsvPath.Name = "btn_LoadCsvPath";
+            this.btn_LoadCsvPath.Size = new System.Drawing.Size(31, 23);
+            this.btn_LoadCsvPath.TabIndex = 51;
+            this.btn_LoadCsvPath.Text = "...";
+            this.btn_LoadCsvPath.UseVisualStyleBackColor = true;
+            this.btn_LoadCsvPath.Click += new System.EventHandler(this.btn_LoadCsvPath_Click);
             // 
-            // button8
+            // btn_LoadXlsxPath
             // 
-            this.button8.Location = new System.Drawing.Point(133, 141);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(31, 23);
-            this.button8.TabIndex = 52;
-            this.button8.Text = "...";
-            this.button8.UseVisualStyleBackColor = true;
+            this.btn_LoadXlsxPath.Location = new System.Drawing.Point(133, 141);
+            this.btn_LoadXlsxPath.Name = "btn_LoadXlsxPath";
+            this.btn_LoadXlsxPath.Size = new System.Drawing.Size(31, 23);
+            this.btn_LoadXlsxPath.TabIndex = 52;
+            this.btn_LoadXlsxPath.Text = "...";
+            this.btn_LoadXlsxPath.UseVisualStyleBackColor = true;
+            this.btn_LoadXlsxPath.Click += new System.EventHandler(this.btn_LoadXlsxPath_Click);
             // 
-            // button9
+            // btn_LoadDocxPath
             // 
-            this.button9.Location = new System.Drawing.Point(133, 183);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(31, 23);
-            this.button9.TabIndex = 53;
-            this.button9.Text = "...";
-            this.button9.UseVisualStyleBackColor = true;
+            this.btn_LoadDocxPath.Location = new System.Drawing.Point(133, 183);
+            this.btn_LoadDocxPath.Name = "btn_LoadDocxPath";
+            this.btn_LoadDocxPath.Size = new System.Drawing.Size(31, 23);
+            this.btn_LoadDocxPath.TabIndex = 53;
+            this.btn_LoadDocxPath.Text = "...";
+            this.btn_LoadDocxPath.UseVisualStyleBackColor = true;
+            this.btn_LoadDocxPath.Click += new System.EventHandler(this.btn_LoadDocxPath_Click);
             // 
-            // button10
+            // btn_LoadLogoPath
             // 
-            this.button10.Location = new System.Drawing.Point(133, 223);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(31, 23);
-            this.button10.TabIndex = 54;
-            this.button10.Text = "...";
-            this.button10.UseVisualStyleBackColor = true;
+            this.btn_LoadLogoPath.Location = new System.Drawing.Point(133, 223);
+            this.btn_LoadLogoPath.Name = "btn_LoadLogoPath";
+            this.btn_LoadLogoPath.Size = new System.Drawing.Size(31, 23);
+            this.btn_LoadLogoPath.TabIndex = 54;
+            this.btn_LoadLogoPath.Text = "...";
+            this.btn_LoadLogoPath.UseVisualStyleBackColor = true;
+            this.btn_LoadLogoPath.Click += new System.EventHandler(this.btn_LoadLogoPath_Click);
             // 
             // label7
             // 
@@ -532,10 +540,10 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Button button10;
-        private System.Windows.Forms.Button button9;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button btn_LoadLogoPath;
+        private System.Windows.Forms.Button btn_LoadDocxPath;
+        private System.Windows.Forms.Button btn_LoadXlsxPath;
+        private System.Windows.Forms.Button btn_LoadCsvPath;
         private System.Windows.Forms.Label label6;
     }
 }

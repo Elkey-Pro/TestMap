@@ -27,6 +27,7 @@ using System.Xml.Linq;
 using Microsoft.VisualBasic.FileIO;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using Button = System.Windows.Forms.Button;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace RvAutoReport
 {
@@ -2007,7 +2008,11 @@ namespace RvAutoReport
                         decimal PAR = Math.Round((365 * avgTop5Ulti2022 / 100) * avgTop5PriceNight);
                         xlData.Rows.Add("Potential Annual Revenue for the top 5 based on 2022 Utilization", "$" + PAR);
                     }
-                    xlData.Rows.Add("Potential Annual Revenue for the top 5 based on 2022 Utilization", "Not Enough Data");
+                    else
+                    {
+                        xlData.Rows.Add("Potential Annual Revenue for the top 5 based on 2022 Utilization", "Not Enough Data");
+                    }
+                  
 
 
 
@@ -2146,6 +2151,74 @@ namespace RvAutoReport
         private void label4_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void btn_LoadCsvPath_Click(object sender, EventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            //dialog.InitialDirectory = @"C:\";
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                txt_csvInput.Text  = dialog.FileName;
+                
+            }
+        }
+
+        private void txt_csvInput_TextChanged(object sender, EventArgs e)
+        {
+            csv_input = txt_csvInput.Text;
+        }
+
+        private void txt_xlsxOutput_TextChanged(object sender, EventArgs e)
+        {
+            xlsx_output = txt_xlsxOutput.Text;
+        }
+
+        private void txt_docxOutPut_TextChanged(object sender, EventArgs e)
+        {
+            Word_output = txt_docxOutPut.Text;
+        }
+
+        private void txt_logopath_TextChanged(object sender, EventArgs e)
+        {
+            Logo_path = txt_logopath.Text;
+        }
+
+        private void btn_LoadXlsxPath_Click(object sender, EventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            //dialog.InitialDirectory = @"C:\";
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                txt_xlsxOutput.Text = dialog.FileName;
+
+            }
+        }
+
+        private void btn_LoadDocxPath_Click(object sender, EventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            //dialog.InitialDirectory = @"C:\";
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                txt_docxOutPut.Text = dialog.FileName;
+
+            }
+        }
+
+        private void btn_LoadLogoPath_Click(object sender, EventArgs e)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            //dialog.InitialDirectory = @"C:\";
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                txt_logopath.Text = dialog.FileName;
+
+            }
         }
     }
 }
