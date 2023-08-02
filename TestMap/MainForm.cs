@@ -459,7 +459,6 @@ namespace RvAutoReport
             {
                 try
                 {
-                    Word_report_template_file.Clear();
                     csv_input = txt_csvInput.Text;
                     xlsx_output = txt_xlsxOutput.Text;
                     Word_output = txt_docxOutPut.Text;
@@ -2263,6 +2262,21 @@ namespace RvAutoReport
         private void btn_OpenTemp_Click(object sender, EventArgs e)
         {
             Process.Start("explorer.exe", Report_Template_folder);
+        }
+
+        private void cbb_SelectReport_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cbb_SelectReport_MouseDown(object sender, MouseEventArgs e)
+        {
+            string[] files = GetFileNamesFromFolder(Report_Template_folder, "*.docx");
+            if (files.Length > 0)
+            {
+                cbb_SelectReport.DataSource = files;
+                cbb_SelectReport.SelectedText = files.FirstOrDefault();
+            }
         }
     }
 }

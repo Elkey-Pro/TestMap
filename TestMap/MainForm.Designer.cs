@@ -451,6 +451,8 @@
             this.cbb_SelectReport.Name = "cbb_SelectReport";
             this.cbb_SelectReport.Size = new System.Drawing.Size(244, 21);
             this.cbb_SelectReport.TabIndex = 6;
+            this.cbb_SelectReport.SelectedIndexChanged += new System.EventHandler(this.cbb_SelectReport_SelectedIndexChanged);
+            this.cbb_SelectReport.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cbb_SelectReport_MouseDown);
             // 
             // rd_runOneReport
             // 
