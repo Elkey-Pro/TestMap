@@ -32,10 +32,7 @@ namespace RvAutoReport
             xlApp.DisplayAlerts = false;
             xlWorkBook = xlApp.Workbooks.Open(ExcelPath);
         }
-            
-          
-
-
+               
         public class ExcelChart 
         {
             public int Left {  get; set; }

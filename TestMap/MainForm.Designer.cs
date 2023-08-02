@@ -47,26 +47,31 @@
             this.txt_log = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.dGVDataWFromXl = new System.Windows.Forms.DataGridView();
-            this.rd_runAllReport = new System.Windows.Forms.RadioButton();
-            this.rd_runOneReport = new System.Windows.Forms.RadioButton();
-            this.cbb_SelectReport = new System.Windows.Forms.ComboBox();
-            this.txt_csvInput = new System.Windows.Forms.TextBox();
-            this.txt_xlsxOutput = new System.Windows.Forms.TextBox();
-            this.txt_docxOutPut = new System.Windows.Forms.TextBox();
-            this.txt_logopath = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.btn_LoadLogoPath = new System.Windows.Forms.Button();
+            this.btn_LoadDocxPath = new System.Windows.Forms.Button();
+            this.btn_LoadXlsxPath = new System.Windows.Forms.Button();
+            this.btn_LoadCsvPath = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.txt_circleDiameter = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.btn_LoadCsvPath = new System.Windows.Forms.Button();
-            this.btn_LoadXlsxPath = new System.Windows.Forms.Button();
-            this.btn_LoadDocxPath = new System.Windows.Forms.Button();
-            this.btn_LoadLogoPath = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
+            this.txt_logopath = new System.Windows.Forms.TextBox();
+            this.txt_docxOutPut = new System.Windows.Forms.TextBox();
+            this.txt_xlsxOutput = new System.Windows.Forms.TextBox();
+            this.txt_csvInput = new System.Windows.Forms.TextBox();
+            this.cbb_SelectReport = new System.Windows.Forms.ComboBox();
+            this.rd_runOneReport = new System.Windows.Forms.RadioButton();
+            this.rd_runAllReport = new System.Windows.Forms.RadioButton();
+            this.button3 = new System.Windows.Forms.Button();
+            this.dGVDataWFromXl = new System.Windows.Forms.DataGridView();
+            this.btn_openCSV = new System.Windows.Forms.Button();
+            this.btn_openXlsx = new System.Windows.Forms.Button();
+            this.btn_openDocx = new System.Windows.Forms.Button();
+            this.btn_openLogo = new System.Windows.Forms.Button();
+            this.btn_OpenTemp = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -271,6 +276,11 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.btn_OpenTemp);
+            this.groupBox2.Controls.Add(this.btn_openLogo);
+            this.groupBox2.Controls.Add(this.btn_openDocx);
+            this.groupBox2.Controls.Add(this.btn_openXlsx);
+            this.groupBox2.Controls.Add(this.btn_openCSV);
             this.groupBox2.Controls.Add(this.label12);
             this.groupBox2.Controls.Add(this.label11);
             this.groupBox2.Controls.Add(this.label7);
@@ -296,88 +306,81 @@
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             // 
-            // button3
+            // label12
             // 
-            this.button3.Location = new System.Drawing.Point(313, 395);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(114, 43);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "SAVE";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 188);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(92, 13);
+            this.label12.TabIndex = 57;
+            this.label12.Text = "Docx Output Path";
             // 
-            // dGVDataWFromXl
+            // label11
             // 
-            this.dGVDataWFromXl.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dGVDataWFromXl.Location = new System.Drawing.Point(0, 42);
-            this.dGVDataWFromXl.Name = "dGVDataWFromXl";
-            this.dGVDataWFromXl.Size = new System.Drawing.Size(357, 438);
-            this.dGVDataWFromXl.TabIndex = 0;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 147);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(86, 13);
+            this.label11.TabIndex = 56;
+            this.label11.Text = "Xlsx Output Path";
             // 
-            // rd_runAllReport
+            // label7
             // 
-            this.rd_runAllReport.AutoSize = true;
-            this.rd_runAllReport.Location = new System.Drawing.Point(6, 29);
-            this.rd_runAllReport.Name = "rd_runAllReport";
-            this.rd_runAllReport.Size = new System.Drawing.Size(94, 17);
-            this.rd_runAllReport.TabIndex = 4;
-            this.rd_runAllReport.TabStop = true;
-            this.rd_runAllReport.Text = "Run All Report";
-            this.rd_runAllReport.UseVisualStyleBackColor = true;
-            this.rd_runAllReport.CheckedChanged += new System.EventHandler(this.rd_runAllReport_CheckedChanged);
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 229);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(56, 13);
+            this.label7.TabIndex = 55;
+            this.label7.Text = "Logo Path";
             // 
-            // rd_runOneReport
+            // btn_LoadLogoPath
             // 
-            this.rd_runOneReport.AutoSize = true;
-            this.rd_runOneReport.Location = new System.Drawing.Point(6, 61);
-            this.rd_runOneReport.Name = "rd_runOneReport";
-            this.rd_runOneReport.Size = new System.Drawing.Size(121, 17);
-            this.rd_runOneReport.TabIndex = 5;
-            this.rd_runOneReport.TabStop = true;
-            this.rd_runOneReport.Text = "Run Specific Report";
-            this.rd_runOneReport.UseVisualStyleBackColor = true;
-            this.rd_runOneReport.CheckedChanged += new System.EventHandler(this.rd_runOneReport_CheckedChanged);
+            this.btn_LoadLogoPath.Location = new System.Drawing.Point(133, 223);
+            this.btn_LoadLogoPath.Name = "btn_LoadLogoPath";
+            this.btn_LoadLogoPath.Size = new System.Drawing.Size(31, 23);
+            this.btn_LoadLogoPath.TabIndex = 54;
+            this.btn_LoadLogoPath.Text = "...";
+            this.btn_LoadLogoPath.UseVisualStyleBackColor = true;
+            this.btn_LoadLogoPath.Click += new System.EventHandler(this.btn_LoadLogoPath_Click);
             // 
-            // cbb_SelectReport
+            // btn_LoadDocxPath
             // 
-            this.cbb_SelectReport.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbb_SelectReport.FormattingEnabled = true;
-            this.cbb_SelectReport.Location = new System.Drawing.Point(133, 60);
-            this.cbb_SelectReport.Name = "cbb_SelectReport";
-            this.cbb_SelectReport.Size = new System.Drawing.Size(291, 21);
-            this.cbb_SelectReport.TabIndex = 6;
+            this.btn_LoadDocxPath.Location = new System.Drawing.Point(133, 183);
+            this.btn_LoadDocxPath.Name = "btn_LoadDocxPath";
+            this.btn_LoadDocxPath.Size = new System.Drawing.Size(31, 23);
+            this.btn_LoadDocxPath.TabIndex = 53;
+            this.btn_LoadDocxPath.Text = "...";
+            this.btn_LoadDocxPath.UseVisualStyleBackColor = true;
+            this.btn_LoadDocxPath.Click += new System.EventHandler(this.btn_LoadDocxPath_Click);
             // 
-            // txt_csvInput
+            // btn_LoadXlsxPath
             // 
-            this.txt_csvInput.Location = new System.Drawing.Point(173, 100);
-            this.txt_csvInput.Name = "txt_csvInput";
-            this.txt_csvInput.Size = new System.Drawing.Size(251, 20);
-            this.txt_csvInput.TabIndex = 7;
-            this.txt_csvInput.TextChanged += new System.EventHandler(this.txt_csvInput_TextChanged);
+            this.btn_LoadXlsxPath.Location = new System.Drawing.Point(133, 141);
+            this.btn_LoadXlsxPath.Name = "btn_LoadXlsxPath";
+            this.btn_LoadXlsxPath.Size = new System.Drawing.Size(31, 23);
+            this.btn_LoadXlsxPath.TabIndex = 52;
+            this.btn_LoadXlsxPath.Text = "...";
+            this.btn_LoadXlsxPath.UseVisualStyleBackColor = true;
+            this.btn_LoadXlsxPath.Click += new System.EventHandler(this.btn_LoadXlsxPath_Click);
             // 
-            // txt_xlsxOutput
+            // btn_LoadCsvPath
             // 
-            this.txt_xlsxOutput.Location = new System.Drawing.Point(173, 144);
-            this.txt_xlsxOutput.Name = "txt_xlsxOutput";
-            this.txt_xlsxOutput.Size = new System.Drawing.Size(251, 20);
-            this.txt_xlsxOutput.TabIndex = 8;
-            this.txt_xlsxOutput.TextChanged += new System.EventHandler(this.txt_xlsxOutput_TextChanged);
+            this.btn_LoadCsvPath.Location = new System.Drawing.Point(133, 98);
+            this.btn_LoadCsvPath.Name = "btn_LoadCsvPath";
+            this.btn_LoadCsvPath.Size = new System.Drawing.Size(31, 23);
+            this.btn_LoadCsvPath.TabIndex = 51;
+            this.btn_LoadCsvPath.Text = "...";
+            this.btn_LoadCsvPath.UseVisualStyleBackColor = true;
+            this.btn_LoadCsvPath.Click += new System.EventHandler(this.btn_LoadCsvPath_Click);
             // 
-            // txt_docxOutPut
+            // label6
             // 
-            this.txt_docxOutPut.Location = new System.Drawing.Point(173, 186);
-            this.txt_docxOutPut.Name = "txt_docxOutPut";
-            this.txt_docxOutPut.Size = new System.Drawing.Size(251, 20);
-            this.txt_docxOutPut.TabIndex = 9;
-            this.txt_docxOutPut.TextChanged += new System.EventHandler(this.txt_docxOutPut_TextChanged);
-            // 
-            // txt_logopath
-            // 
-            this.txt_logopath.Location = new System.Drawing.Point(173, 226);
-            this.txt_logopath.Name = "txt_logopath";
-            this.txt_logopath.Size = new System.Drawing.Size(251, 20);
-            this.txt_logopath.TabIndex = 10;
-            this.txt_logopath.TextChanged += new System.EventHandler(this.txt_logopath_TextChanged);
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 100);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(80, 13);
+            this.label6.TabIndex = 50;
+            this.label6.Text = "CSV Input Path";
             // 
             // label4
             // 
@@ -407,81 +410,138 @@
             this.label3.Text = "Circle Diameter";
             this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
-            // label6
+            // txt_logopath
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 100);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(80, 13);
-            this.label6.TabIndex = 50;
-            this.label6.Text = "CSV Input Path";
+            this.txt_logopath.Location = new System.Drawing.Point(173, 226);
+            this.txt_logopath.Name = "txt_logopath";
+            this.txt_logopath.Size = new System.Drawing.Size(204, 20);
+            this.txt_logopath.TabIndex = 10;
+            this.txt_logopath.TextChanged += new System.EventHandler(this.txt_logopath_TextChanged);
             // 
-            // btn_LoadCsvPath
+            // txt_docxOutPut
             // 
-            this.btn_LoadCsvPath.Location = new System.Drawing.Point(133, 98);
-            this.btn_LoadCsvPath.Name = "btn_LoadCsvPath";
-            this.btn_LoadCsvPath.Size = new System.Drawing.Size(31, 23);
-            this.btn_LoadCsvPath.TabIndex = 51;
-            this.btn_LoadCsvPath.Text = "...";
-            this.btn_LoadCsvPath.UseVisualStyleBackColor = true;
-            this.btn_LoadCsvPath.Click += new System.EventHandler(this.btn_LoadCsvPath_Click);
+            this.txt_docxOutPut.Location = new System.Drawing.Point(173, 186);
+            this.txt_docxOutPut.Name = "txt_docxOutPut";
+            this.txt_docxOutPut.Size = new System.Drawing.Size(204, 20);
+            this.txt_docxOutPut.TabIndex = 9;
+            this.txt_docxOutPut.TextChanged += new System.EventHandler(this.txt_docxOutPut_TextChanged);
             // 
-            // btn_LoadXlsxPath
+            // txt_xlsxOutput
             // 
-            this.btn_LoadXlsxPath.Location = new System.Drawing.Point(133, 141);
-            this.btn_LoadXlsxPath.Name = "btn_LoadXlsxPath";
-            this.btn_LoadXlsxPath.Size = new System.Drawing.Size(31, 23);
-            this.btn_LoadXlsxPath.TabIndex = 52;
-            this.btn_LoadXlsxPath.Text = "...";
-            this.btn_LoadXlsxPath.UseVisualStyleBackColor = true;
-            this.btn_LoadXlsxPath.Click += new System.EventHandler(this.btn_LoadXlsxPath_Click);
+            this.txt_xlsxOutput.Location = new System.Drawing.Point(173, 144);
+            this.txt_xlsxOutput.Name = "txt_xlsxOutput";
+            this.txt_xlsxOutput.Size = new System.Drawing.Size(204, 20);
+            this.txt_xlsxOutput.TabIndex = 8;
+            this.txt_xlsxOutput.TextChanged += new System.EventHandler(this.txt_xlsxOutput_TextChanged);
             // 
-            // btn_LoadDocxPath
+            // txt_csvInput
             // 
-            this.btn_LoadDocxPath.Location = new System.Drawing.Point(133, 183);
-            this.btn_LoadDocxPath.Name = "btn_LoadDocxPath";
-            this.btn_LoadDocxPath.Size = new System.Drawing.Size(31, 23);
-            this.btn_LoadDocxPath.TabIndex = 53;
-            this.btn_LoadDocxPath.Text = "...";
-            this.btn_LoadDocxPath.UseVisualStyleBackColor = true;
-            this.btn_LoadDocxPath.Click += new System.EventHandler(this.btn_LoadDocxPath_Click);
+            this.txt_csvInput.Location = new System.Drawing.Point(173, 100);
+            this.txt_csvInput.Name = "txt_csvInput";
+            this.txt_csvInput.Size = new System.Drawing.Size(204, 20);
+            this.txt_csvInput.TabIndex = 7;
+            this.txt_csvInput.TextChanged += new System.EventHandler(this.txt_csvInput_TextChanged);
             // 
-            // btn_LoadLogoPath
+            // cbb_SelectReport
             // 
-            this.btn_LoadLogoPath.Location = new System.Drawing.Point(133, 223);
-            this.btn_LoadLogoPath.Name = "btn_LoadLogoPath";
-            this.btn_LoadLogoPath.Size = new System.Drawing.Size(31, 23);
-            this.btn_LoadLogoPath.TabIndex = 54;
-            this.btn_LoadLogoPath.Text = "...";
-            this.btn_LoadLogoPath.UseVisualStyleBackColor = true;
-            this.btn_LoadLogoPath.Click += new System.EventHandler(this.btn_LoadLogoPath_Click);
+            this.cbb_SelectReport.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbb_SelectReport.FormattingEnabled = true;
+            this.cbb_SelectReport.Location = new System.Drawing.Point(133, 60);
+            this.cbb_SelectReport.Name = "cbb_SelectReport";
+            this.cbb_SelectReport.Size = new System.Drawing.Size(244, 21);
+            this.cbb_SelectReport.TabIndex = 6;
             // 
-            // label7
+            // rd_runOneReport
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 229);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(56, 13);
-            this.label7.TabIndex = 55;
-            this.label7.Text = "Logo Path";
+            this.rd_runOneReport.AutoSize = true;
+            this.rd_runOneReport.Location = new System.Drawing.Point(6, 61);
+            this.rd_runOneReport.Name = "rd_runOneReport";
+            this.rd_runOneReport.Size = new System.Drawing.Size(121, 17);
+            this.rd_runOneReport.TabIndex = 5;
+            this.rd_runOneReport.TabStop = true;
+            this.rd_runOneReport.Text = "Run Specific Report";
+            this.rd_runOneReport.UseVisualStyleBackColor = true;
+            this.rd_runOneReport.CheckedChanged += new System.EventHandler(this.rd_runOneReport_CheckedChanged);
             // 
-            // label11
+            // rd_runAllReport
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 147);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(86, 13);
-            this.label11.TabIndex = 56;
-            this.label11.Text = "Xlsx Output Path";
+            this.rd_runAllReport.AutoSize = true;
+            this.rd_runAllReport.Location = new System.Drawing.Point(6, 29);
+            this.rd_runAllReport.Name = "rd_runAllReport";
+            this.rd_runAllReport.Size = new System.Drawing.Size(94, 17);
+            this.rd_runAllReport.TabIndex = 4;
+            this.rd_runAllReport.TabStop = true;
+            this.rd_runAllReport.Text = "Run All Report";
+            this.rd_runAllReport.UseVisualStyleBackColor = true;
+            this.rd_runAllReport.CheckedChanged += new System.EventHandler(this.rd_runAllReport_CheckedChanged);
             // 
-            // label12
+            // button3
             // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 188);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(92, 13);
-            this.label12.TabIndex = 57;
-            this.label12.Text = "Docx Output Path";
+            this.button3.Location = new System.Drawing.Point(313, 395);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(114, 43);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "SAVE";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // dGVDataWFromXl
+            // 
+            this.dGVDataWFromXl.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dGVDataWFromXl.Location = new System.Drawing.Point(0, 42);
+            this.dGVDataWFromXl.Name = "dGVDataWFromXl";
+            this.dGVDataWFromXl.Size = new System.Drawing.Size(357, 438);
+            this.dGVDataWFromXl.TabIndex = 0;
+            // 
+            // btn_openCSV
+            // 
+            this.btn_openCSV.Location = new System.Drawing.Point(383, 98);
+            this.btn_openCSV.Name = "btn_openCSV";
+            this.btn_openCSV.Size = new System.Drawing.Size(41, 23);
+            this.btn_openCSV.TabIndex = 58;
+            this.btn_openCSV.Text = "Open";
+            this.btn_openCSV.UseVisualStyleBackColor = true;
+            this.btn_openCSV.Click += new System.EventHandler(this.btn_openCSV_Click);
+            // 
+            // btn_openXlsx
+            // 
+            this.btn_openXlsx.Location = new System.Drawing.Point(383, 141);
+            this.btn_openXlsx.Name = "btn_openXlsx";
+            this.btn_openXlsx.Size = new System.Drawing.Size(41, 23);
+            this.btn_openXlsx.TabIndex = 59;
+            this.btn_openXlsx.Text = "Open";
+            this.btn_openXlsx.UseVisualStyleBackColor = true;
+            this.btn_openXlsx.Click += new System.EventHandler(this.btn_openXlsx_Click);
+            // 
+            // btn_openDocx
+            // 
+            this.btn_openDocx.Location = new System.Drawing.Point(383, 184);
+            this.btn_openDocx.Name = "btn_openDocx";
+            this.btn_openDocx.Size = new System.Drawing.Size(41, 23);
+            this.btn_openDocx.TabIndex = 60;
+            this.btn_openDocx.Text = "Open";
+            this.btn_openDocx.UseVisualStyleBackColor = true;
+            this.btn_openDocx.Click += new System.EventHandler(this.btn_openDocx_Click);
+            // 
+            // btn_openLogo
+            // 
+            this.btn_openLogo.Location = new System.Drawing.Point(383, 224);
+            this.btn_openLogo.Name = "btn_openLogo";
+            this.btn_openLogo.Size = new System.Drawing.Size(41, 23);
+            this.btn_openLogo.TabIndex = 61;
+            this.btn_openLogo.Text = "Open";
+            this.btn_openLogo.UseVisualStyleBackColor = true;
+            this.btn_openLogo.Click += new System.EventHandler(this.btn_openLogo_Click);
+            // 
+            // btn_OpenTemp
+            // 
+            this.btn_OpenTemp.Location = new System.Drawing.Point(383, 61);
+            this.btn_OpenTemp.Name = "btn_OpenTemp";
+            this.btn_OpenTemp.Size = new System.Drawing.Size(41, 23);
+            this.btn_OpenTemp.TabIndex = 62;
+            this.btn_OpenTemp.Text = "Open";
+            this.btn_OpenTemp.UseVisualStyleBackColor = true;
+            this.btn_OpenTemp.Click += new System.EventHandler(this.btn_OpenTemp_Click);
             // 
             // MainForm
             // 
@@ -545,6 +605,11 @@
         private System.Windows.Forms.Button btn_LoadXlsxPath;
         private System.Windows.Forms.Button btn_LoadCsvPath;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btn_openLogo;
+        private System.Windows.Forms.Button btn_openDocx;
+        private System.Windows.Forms.Button btn_openXlsx;
+        private System.Windows.Forms.Button btn_openCSV;
+        private System.Windows.Forms.Button btn_OpenTemp;
     }
 }
 

@@ -146,6 +146,15 @@ namespace RvAutoReport
                 {
                     WriteLog("File Setting not found, Please change the settings manualy");
                 }
+
+
+                if(File.Exists(DataXmlPath))
+                {
+                    DataSet dtset = new DataSet();
+                    dtset.ReadXml(DataXmlPath);
+                    dGVDataWFromXl.DataSource = dtset.Tables[0];
+                }
+
             }
             catch (Exception ex)
             {
@@ -517,9 +526,6 @@ namespace RvAutoReport
                 }
             }
 
-
-
-
             string[] files = Directory.GetFiles(xlsx_output, "*.xlsx");
             if (files.Length > 0)
             {
@@ -537,7 +543,7 @@ namespace RvAutoReport
                         {
                             if (!file.Contains("~$")) // ignore the excel temp file
                             {
-
+                                // start read xlsx output 
                                 ReadExcel(file);
 
                                 if (token.IsCancellationRequested)
@@ -789,6 +795,7 @@ namespace RvAutoReport
                                   Type = typeGroup.Key,
                                   Count = typeGroup.Count()
                               };
+
             DataTable RvCountGroupByType = ConvertToDataTable(groupedRows);
             RvCountGroupByType.DefaultView.Sort = "[Type] ASC";
             RvCountGroupByType = RvCountGroupByType.DefaultView.ToTable();
@@ -969,29 +976,30 @@ namespace RvAutoReport
                     data = xlWorkSheet.Cells[12, 2].Value.ToString();
                     DataForWordReport.Rows.Add("<TOP5_AVG_UTI_2022>", (double.Parse(xlWorkSheet.Cells[12, 2].Value.ToString()) * 100) + "%");
 
+
                     //Average Utilization of top 5 YTD
-                    data = xlWorkSheet.Cells[13, 2].Value.ToString();
-                    DataForWordReport.Rows.Add("<TOP5_AVG_UTI_YTD>", (double.Parse(xlWorkSheet.Cells[13, 2].Value.ToString()) * 100) + "%");
+                    data = xlWorkSheet.Cells[14, 2].Value.ToString();
+                    DataForWordReport.Rows.Add("<TOP5_AVG_UTI_YTD>", (double.Parse(xlWorkSheet.Cells[14, 2].Value.ToString()) * 100) + "%");
 
                     //Average Utilization of Top 25 YTD
-                    data = xlWorkSheet.Cells[14, 2].Value.ToString();
-                    DataForWordReport.Rows.Add("<TOP25_AVG_UTI_YTD>", (double.Parse(xlWorkSheet.Cells[14, 2].Value.ToString()) * 100) + "%");
+                    data = xlWorkSheet.Cells[16, 2].Value.ToString();
+                    DataForWordReport.Rows.Add("<TOP25_AVG_UTI_YTD>", (double.Parse(xlWorkSheet.Cells[16, 2].Value.ToString()) * 100) + "%");
 
                     //Future utilization 30 Days
-                    data = xlWorkSheet.Cells[19, 2].Value.ToString();
-                    DataForWordReport.Rows.Add("<FUTURE_UTI_30>", (double.Parse(xlWorkSheet.Cells[19, 2].Value.ToString()) * 100) + "%");
+                    data = xlWorkSheet.Cells[17, 2].Value.ToString();
+                    DataForWordReport.Rows.Add("<FUTURE_UTI_30>", (double.Parse(xlWorkSheet.Cells[17, 2].Value.ToString()) * 100) + "%");
 
                     //Future utilization 60 Days
-                    data = xlWorkSheet.Cells[20, 2].Value.ToString();
-                    DataForWordReport.Rows.Add("<FUTURE_UTI_60>", (double.Parse(xlWorkSheet.Cells[20, 2].Value.ToString()) * 100) + "%");
+                    data = xlWorkSheet.Cells[18, 2].Value.ToString();
+                    DataForWordReport.Rows.Add("<FUTURE_UTI_60>", (double.Parse(xlWorkSheet.Cells[18, 2].Value.ToString()) * 100) + "%");
 
                     //Future utilization 90 Days
-                    data = xlWorkSheet.Cells[21, 2].Value.ToString();
-                    DataForWordReport.Rows.Add("<FUTURE_UTI_90>", (double.Parse(xlWorkSheet.Cells[21, 2].Value.ToString()) * 100) + "%");
+                    data = xlWorkSheet.Cells[19, 2].Value.ToString();
+                    DataForWordReport.Rows.Add("<FUTURE_UTI_90>", (double.Parse(xlWorkSheet.Cells[19, 2].Value.ToString()) * 100) + "%");
 
                     //  Potential Annual
-                    data = xlWorkSheet.Cells[22, 2].Value.ToString();
-                    DataForWordReport.Rows.Add("<POTENTIAL_ANNUAL>", "$" + xlWorkSheet.Cells[22, 2].Value);
+                    data = xlWorkSheet.Cells[20, 2].Value.ToString();
+                    DataForWordReport.Rows.Add("<POTENTIAL_ANNUAL>", "$" + xlWorkSheet.Cells[20, 2].Value);
 
                     //  Average nightly price of top 5 RVs
 
@@ -1021,15 +1029,13 @@ namespace RvAutoReport
 
                     DataForWordReport.Rows.Add("<AVG_NP_TOP5_100>", Math.Round(AvgTop5NightlyPrice * 365));
 
-
-
                     #endregion
-
 
                     DataForWordReport.WriteXml("data.xml");
 
-
                     WriteLog("Creating Chart");
+
+
                     #region totalRVcount
                     //write header to cell
                     xlWorkSheet.Cells[1, 28].Value = "TYPE";
@@ -1741,27 +1747,34 @@ namespace RvAutoReport
 
         private void button6_Click(object sender, EventArgs e)
         {
+            // clear log
             txt_log.Clear();
+
+            // disable controls
             ChangeCotrolStatus(false);
+
+            // get list of csv file at csv_input Folder
             string[] files = Directory.GetFiles(csv_input, "*.csv");
 
+            // if any file has founded
             if (files.Length > 0)
             {
                 WriteLog("Start Loop All file csv in folder");
 
+                // create a task 
                 TokenSource = new System.Threading.CancellationTokenSource();
                 CancellationToken token = TokenSource.Token;
                 Task.Factory.StartNew(() =>
 
                 {
-                    //try
-                    //{
+                try
+                {
                     Start_time = DateTime.Now;
                     foreach (string file in files)
                     {
                         if (!file.Contains("~$")) // ignore the excel temp file
                         {
-
+                            // start read csv file
                             CSVtoXlsx(file);
 
                             if (token.IsCancellationRequested)
@@ -1772,25 +1785,26 @@ namespace RvAutoReport
                     }
                     WriteLog("Elapsed Time : " + Math.Round((DateTime.Now - Start_time).TotalSeconds));
                     WriteLog("DONE!!!!!!!!!");
+                    // task is done, enable the controls
                     this.Invoke(new MethodInvoker(delegate
                     {
                         ChangeCotrolStatus(true);
                     }
                     ));
 
-                    //}
-                    //catch (OperationCanceledException) { }
-                    //catch (ObjectDisposedException) { }
-                    //catch (Exception ex)
-                    //{
-                    //    WriteLog(DateTime.Now + " " + ex.ToString());
-                    //    this.Invoke(new MethodInvoker(delegate
-                    //    {
-                    //        ChangeCotrolStatus(true);
-                    //    }
-                    //    ));
-                    //    //TokenSource.Cancel();
-                    //}
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (ObjectDisposedException) { }
+                    catch (Exception ex)
+                    {
+                        WriteLog(DateTime.Now + " " + ex.ToString());
+                        this.Invoke(new MethodInvoker(delegate
+                        {
+                            ChangeCotrolStatus(true);
+                        }
+                        ));
+                        TokenSource.Cancel();
+                    }
 
                 }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             }
@@ -1802,20 +1816,21 @@ namespace RvAutoReport
 
         }
 
-
         private void CSVtoXlsx(string csvFilePath)
         {
+            // kill all running word & excel process
             KillWordAndExcelProcesses();
 
-            // test replace power automate 
-
+            
             WriteLog("load csv datatable");
+
+            // load csv data table
             DataTable Data = LoadCSV(csvFilePath);
 
             // generate xlsx path
             string ExcelPath = xlsx_output + @"\" + csvFilePath.Substring(csvFilePath.LastIndexOf(@"\") + 1).Replace(".csv", ".xlsx");
 
-            // ignore empty type
+            // ignore where  TYPE is empty
             Data = Data.AsEnumerable().Where(rn => !string.IsNullOrEmpty(rn.Field<string>("TYPE"))).CopyToDataTable();
 
             // clean speical character (%,$) so data can be convert to decimal
@@ -1860,10 +1875,11 @@ namespace RvAutoReport
             WriteDataTableToExcelSheet(xlWorkSheet, Data, 1, 1);
 
 
-            // get list EV type
+            // get list RV type
             WriteLog("get Rv list");
             List<string> RvList = Data.AsEnumerable().Select(row => row.Field<string>("TYPE")).Distinct().ToList();
 
+            // order Rvlist decs
             RvList = RvList.OrderByDescending(s => s).ToList();
 
             if (RvList.Count > 0)
@@ -1883,9 +1899,6 @@ namespace RvAutoReport
                     DataTable rvData = Data.AsEnumerable().Where(clm => clm.Field<string>("TYPE") == rv).CopyToDataTable();
                     // sort by Current YTD Ulti
                     rvData = rvData.AsEnumerable().OrderByDescending(row => decimal.Parse(row.Field<string>("Current YTD Utilization"))).CopyToDataTable();
-
-                    //rvData.DefaultView.Sort = "[Current YTD Utilization] DESC";
-                    //rvData = rvData.DefaultView.ToTable();
 
                     // write data to worksheet 
                     WriteLog("Write data to " + NewSheetData.Name);
@@ -1907,81 +1920,90 @@ namespace RvAutoReport
                     int TotalRVTypeCount = rvData.Rows.Count;
 
                     WriteLog("start calculate data ");
-                    //Total RVs in the analysis area : count all row in "Data" table 
+                    //A1 Total RVs in the analysis area : count all row in "Data" table 
                     xlData.Rows.Add("Total RVs in the analysis area", TotalRVCount);
 
-                    // Total Class ClassName As in the  analysis area : Count all row in Type Filterd table 
+                    //A2 Total Class ClassName As in the  analysis area : Count all row in Type Filterd table 
                     xlData.Rows.Add("Total Class " + rv + " As in the  analysis area", TotalRVTypeCount);
 
-                    // Percent of  Total RVs in the analysis area that are ClassName : rvData / Data
+                    //A3 Percent of  Total RVs in the analysis area that are ClassName : rvData / Data
                     xlData.Rows.Add("Percent of  Total RVs in the analysis area that are Class " + rv, Math.Round((double)TotalRVTypeCount / (double)TotalRVCount * 100, 0) + "%");
 
-                    //Average Age of all Class ClassName As in the analysis area, count in filtered Rvtype with Year > 0
+                    //A4 Average Age of all Class ClassName As in the analysis area, count in filtered Rvtype with Year > 0
                     int AvgAgeOfallClass = (int)Math.Round(rvData.AsEnumerable().Select(row => int.Parse(row.Field<string>("YEAR"))).Where(value => value > 0).Average(), 0);
                     xlData.Rows.Add("Average Age of all Class " + rv + " As in the analysis area", AvgAgeOfallClass);
 
-                    //Average Age of the Top 5 Class ClassName As in the analyzed area
+                    //A5 Average Age of the Top 5 Class ClassName As in the analyzed area
                     int AvgAgeOfTop5 = (int)Math.Round(rvData.AsEnumerable().Take(5).Select(row => int.Parse(row.Field<string>("YEAR"))).Where(value => value > 0).Average(), 0);
                     xlData.Rows.Add("Average Age of the Top 5 Class " + rv + " As in the analyzed area", AvgAgeOfTop5);
 
-                    // Average Age of the Top 25 Class ClassName As in the analysis area
+                    //A6 Average Age of the Top 25 Class ClassName As in the analysis area
                     int AvgAgeOfTop25 = (int)Math.Round(rvData.AsEnumerable().Take(25).Select(row => int.Parse(row.Field<string>("YEAR"))).Where(value => value > 0).Average(), 0);
                     xlData.Rows.Add("Average Age of the Top 25 Class " + rv + " As in the analyzed area", AvgAgeOfTop25);
 
-                    //Average length of top 5 RVs
+                    //A7 Average length of top 5 RVs
                     int AvglengthOfTop5 = (int)Math.Round(rvData.AsEnumerable().Take(5).Select(row => decimal.Parse(row.Field<string>("LENGTH"))).Where(value => value > 0).Average(), 0);
                     xlData.Rows.Add("Average length of top 5 RVs", AvglengthOfTop5);
 
-                    //Average length of top 25 RVs
+                    //A8 Average length of top 25 RVs
                     int AvglengthOfTop25 = (int)Math.Round(rvData.AsEnumerable().Take(25).Select(row => decimal.Parse(row.Field<string>("LENGTH"))).Where(value => value > 0).Average(), 0);
                     xlData.Rows.Add("Average length of top 25 RVs", AvglengthOfTop25);
 
-                    //Average nightly price of top 5 RVs
+                    //A9 Average nightly price of top 5 RVs
                     decimal NightlyPriceTop5 = Math.Round(rvData.AsEnumerable().Take(5).Select(row => decimal.Parse(row.Field<string>("PRICE/NIGHT"))).Average(), 2);
                     xlData.Rows.Add("Average nightly price of top 5 RVs", "$" + NightlyPriceTop5);
 
-                    //Average nightly price of top 25 RVs
+                    //A10 Average nightly price of top 25 RVs
                     decimal NightlyPriceTop25 = Math.Round(rvData.AsEnumerable().Take(25).Select(row => decimal.Parse(row.Field<string>("PRICE/NIGHT").Replace("$", ""))).Average(), 2);
                     xlData.Rows.Add("Average nightly price of top 25 RVs", "$" + NightlyPriceTop25);
 
-                    //Average Utilization 2021 Top 5
+                    //A11 Average Utilization 2021 Top 5
                     // sort by UTIL 2021 desc
                     DataTable dtFor_AvgUtli2021 = rvData.AsEnumerable().OrderByDescending(row => decimal.Parse(row.Field<string>("UTIL 2021"))).CopyToDataTable(); ;
                     // average by top5
                     decimal AvgUtli2021 = Math.Round(dtFor_AvgUtli2021.AsEnumerable().Take(5).Select(row => decimal.Parse(row.Field<string>("UTIL 2021"))).Average(), 0);
                     xlData.Rows.Add("Average Utilization 2021 Top 5", AvgUtli2021 + "%");
 
-                    //Average Utilization 2022 Top 5
+                    //A12 Average Utilization 2022 Top 5
                     // sort by UTIL 2022 desc
                     DataTable dtFor_AvgUtli2022 = rvData.AsEnumerable().OrderByDescending(row => decimal.Parse(row.Field<string>("UTIL 2022"))).CopyToDataTable();
                     // average by top5
                     decimal AvgUtli2022 = Math.Round(dtFor_AvgUtli2022.AsEnumerable().Take(5).Select(row => decimal.Parse(row.Field<string>("UTIL 2022"))).Average(), 0);
                     xlData.Rows.Add("Average Utilization 2022 Top 5", AvgUtli2022 + "%");
 
-                    //Average Utilization of top 5 YTD
+                    //A13 Average Utilization 2022 Top 10
+                    decimal AvgUtli2022Top10 = Math.Round(dtFor_AvgUtli2022.AsEnumerable().Take(10).Select(row => decimal.Parse(row.Field<string>("UTIL 2022"))).Average(), 0);
+                    xlData.Rows.Add("Average Utilization 2022 Top 10", AvgUtli2022Top10 + "%");
+
+                    //A14 Average Utilization of top 5 YTD
                     decimal AvgUtliYTDTop5 = Math.Round(rvData.AsEnumerable().Take(5).Select(row => decimal.Parse(row.Field<string>("Current YTD Utilization"))).Average(), 0);
                     xlData.Rows.Add("Average Utilization of top 5 YTD", AvgUtliYTDTop5 + "%");
-                    //Average Utilization of top 25 YTD
+
+                    //A15 Average Utilization of top 10 YTD	
+                    decimal AvgUtliYTDTop10 = Math.Round(rvData.AsEnumerable().Take(10).Select(row => decimal.Parse(row.Field<string>("Current YTD Utilization"))).Average(), 0);
+                    xlData.Rows.Add("Average Utilization of top 10 YTD", AvgUtliYTDTop10 + "%");
+
+                    //A16 Average Utilization of top 25 YTD
                     decimal AvgUtliYTDTop25 = Math.Round(rvData.AsEnumerable().Take(25).Select(row => decimal.Parse(row.Field<string>("Current YTD Utilization"))).Average(), 0);
                     xlData.Rows.Add("Average Utilization of top 25 YTD", AvgUtliYTDTop25 + "%");
 
 
-                    // this calculation is not using, just leave it here to not break the second phase
+                    //// this calculation is not using, just leave it here to not break the second phase
 
-                    xlData.Rows.Add("Average Utilization In Season (May 1 to Oct 31) Top 5", "%");
-                    xlData.Rows.Add("Average Utilization Off Season (Nov1 to Apr30) Top 5", "%");
-                    xlData.Rows.Add("Average Utilization In Season (May 1 to Oct 31) Top 25", "%");
-                    xlData.Rows.Add("Average Utilization Off Season (Nov1 to Apr30) Top 25", "%");
+                    //xlData.Rows.Add("Average Utilization In Season (May 1 to Oct 31) Top 5", "%");
+                    //xlData.Rows.Add("Average Utilization Off Season (Nov1 to Apr30) Top 5", "%");
+                    //xlData.Rows.Add("Average Utilization In Season (May 1 to Oct 31) Top 25", "%");
+                    //xlData.Rows.Add("Average Utilization Off Season (Nov1 to Apr30) Top 25", "%");
 
-                    //Future utilization 30 Days
+                    //A17 Future utilization 30 Days
                     decimal AvgFutu30UtliTop5 = Math.Round(rvData.AsEnumerable().Take(5).Select(row => decimal.Parse(row.Field<string>("UTIL Future 30").Replace("%", ""))).Average(), 0);
                     xlData.Rows.Add("Future utilization 30 Days", AvgFutu30UtliTop5 + "%");
 
-                    //Future utilization 60 Days
+                    //A18 Future utilization 60 Days
                     decimal AvgFutu60UtliTop5 = Math.Round(rvData.AsEnumerable().Take(5).Select(row => decimal.Parse(row.Field<string>("UTIL Future 60").Replace("%", ""))).Average(), 0);
                     xlData.Rows.Add("Future utilization 60 Days", AvgFutu60UtliTop5 + "%");
 
-                    //Future utilization 90 Days
+                    //A19 Future utilization 90 Days
                     decimal AvgFutu90UtliTop5 = Math.Round(rvData.AsEnumerable().Take(5).Select(row => decimal.Parse(row.Field<string>("UTIL Future 90").Replace("%", ""))).Average(), 0);
                     xlData.Rows.Add("Future utilization 90 Days", AvgFutu90UtliTop5 + "%");
 
@@ -2013,9 +2035,6 @@ namespace RvAutoReport
                         xlData.Rows.Add("Potential Annual Revenue for the top 5 based on 2022 Utilization", "Not Enough Data");
                     }
                   
-
-
-
                     WriteLog("start calculated data  to sheet " + NewSheetStat.Name);
                     // write data to stat worksheet
                     WriteDataTableToExcelSheet(NewSheetStat, xlData, 1, 1, false);
@@ -2219,6 +2238,31 @@ namespace RvAutoReport
                 txt_logopath.Text = dialog.FileName;
 
             }
+        }
+
+        private void btn_openCSV_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", txt_csvInput.Text);
+        }
+
+        private void btn_openXlsx_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", txt_xlsxOutput.Text);
+        }
+
+        private void btn_openDocx_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", txt_docxOutPut.Text);
+        }
+
+        private void btn_openLogo_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", txt_logopath.Text);
+        }
+
+        private void btn_OpenTemp_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", Report_Template_folder);
         }
     }
 }
