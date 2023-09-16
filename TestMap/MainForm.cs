@@ -324,7 +324,7 @@ namespace RvAutoReport
 
         //            // get list_of top5 maker
         //            List<string> Top5MakerandModel = Data.AsEnumerable().Take(5)
-        //                                                    .Select(row => row.Field<string>("MAKE") + " - Length : " + row.Field<Double>("LENGTH").ToString())
+        //                                                    .Select(row => row.Field<string>("MAKE") + " - Length : " + row.Field<double>("LENGTH").ToString())
         //                                                    .Distinct()
         //                                                    .ToList();
 
@@ -630,7 +630,8 @@ namespace RvAutoReport
                     GMap.NET.WindowsForms.GMapOverlay Overlay = new GMap.NET.WindowsForms.GMapOverlay("Overlay");
                     GMap.NET.WindowsForms.GMapPolygon circle = new GMap.NET.WindowsForms.GMapPolygon(circlePoints, "circle");
 
-                    circle.Fill = new SolidBrush(Color.FromArgb(30, Color.Blue));  // Fill color
+                    circle.Fill = new SolidBrush(Color.FromArgb(30, Color.Blue)); 
+                    // Fill color
                     circle.Stroke = new Pen(Color.Blue, 1);
 
                     Overlay.Polygons.Add(circle);
@@ -782,8 +783,8 @@ namespace RvAutoReport
             // read all data
             DataTable FullData = ReadExcelFile("OriginalData", ExcelPath);
 
-            //sort by Current YTD Utilization desc
-            FullData = FullData.AsEnumerable().OrderByDescending(row => row.Field<double>("Current YTD Utilization")).CopyToDataTable();
+            //sort by Current YTD Utilization desc, clm 3 "Current YTD Utilization"
+            FullData = FullData.AsEnumerable().OrderByDescending(row => row[3] ).CopyToDataTable();
 
 
             // datatable for number of RVs
@@ -905,9 +906,9 @@ namespace RvAutoReport
                     DataForWordReport.Columns.Add("ReplaceString");
 
                     WriteLog(" get List top 5 Maker Name");
-
+                    // clm 5 "MAKE"
                     List<string> Top5MakerandModel = Data.AsEnumerable()
-                                        .Select((row) => row.Field<string>("MAKE"))
+                                        .Select((row) => row[5].ToString() )
                                         .Distinct().Take(5)
                                         .ToList();
                     for (int i = 0; i < Top5MakerandModel.Count; i++)
@@ -1002,13 +1003,13 @@ namespace RvAutoReport
 
                     //  Average nightly price of top 5 RVs
 
-                    // sort data again by UTIL 2022
-                    Data = Data.AsEnumerable().OrderByDescending(row => row.Field<double>("UTIL 2022")).CopyToDataTable();
+                    // sort data again by UTIL 2022 clm 13 "UTIL 2021"
+                    Data = Data.AsEnumerable().OrderByDescending(row => double.Parse( row[13].ToString()) ).CopyToDataTable();
                     //Data.DefaultView.Sort = "[UTIL 2022] DESC";
 
                     DataTable Data2 = Data.DefaultView.ToTable();
-
-                    double AvgTop5NightlyPrice = Math.Round(Data2.AsEnumerable().Take(5).Select(row => row.Field<double>("PRICE/NIGHT")).Average(), 2);
+                    // clm 7 "PRICE/NIGHT"
+                    double AvgTop5NightlyPrice = Math.Round(Data2.AsEnumerable().Take(5).Select(row => double.Parse(row[7].ToString())).Average(), 2);
 
                     DataForWordReport.Rows.Add("<AVG_NP_TOP5>", AvgTop5NightlyPrice);
 
@@ -1060,11 +1061,12 @@ namespace RvAutoReport
                     #endregion
 
                     #region top5 Rv length
-                    // avg top5 Rv length data set
-                    var temp = Data.AsEnumerable().Where(row => row.Field<double>("LENGTH") > 0).Select(row => new
+                    // avg top5 Rv length data set , clm 8 "LENGTH"
+                    var temp = Data.AsEnumerable().Where(row => double.Parse(row[8].ToString()) > 0).Select(row => new
                     {
-                        MAKE = row.Field<string>("MAKE"),
-                        LENGTH = row.Field<double>("LENGTH")
+                        // clm 
+                        MAKE = row[5].ToString(),
+                        LENGTH = double.Parse(row[8].ToString())
                     }).Take(5);
                     DataTable Top5_length = new DataTable();
                     Top5_length.Columns.Add("MAKE", typeof(string));
@@ -1108,7 +1110,7 @@ namespace RvAutoReport
 
                     double avgtop25 = (double)xlWorkSheet.Cells[10, 2].Value;
 
-                    double avgAll = Data.AsEnumerable().Average(row => row.Field<double>("PRICE/NIGHT"));
+                    double avgAll = Data.AsEnumerable().Average(row => double.Parse(row[7].ToString()));
 
                     avg_daily_pricenight.Rows.Add("TOP 5", (int)Math.Round(avgtop5));
                     avg_daily_pricenight.Rows.Add("TOP 25", (int)Math.Round(avgtop25));
@@ -1148,11 +1150,12 @@ namespace RvAutoReport
                     }
                     if (dt_forAttributes != null)
                     {
-                        double Top25PETFRIENDELY = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("PET FRIENDELY")) / dt_forAttributes.Rows.Count;
-                        double Top25TAILGATEFRIENDELY = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("TAILGATE FRIENDELY")) / dt_forAttributes.Rows.Count;
-                        double Top25SMOKINGALLOWED = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("SMOKING ALLOWED")) / dt_forAttributes.Rows.Count;
-                        double Top25FESTIVALFRIENDLY = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("FESTIVAL FRIENDLY")) / dt_forAttributes.Rows.Count;
-                        double Top25GENERATOR = dt_forAttributes.AsEnumerable().Sum(row => row.Field<double>("GENERATOR")) / dt_forAttributes.Rows.Count;
+                        // clm 28 "PET FRIENDLY",  29: "TAILGATE FRIENDLY" , 30: "SMOKING ALLOWED" ,  31: "FESTIVAL FRIENDLY" , 32 : "GENERATOR"
+                        double Top25PETFRIENDELY = dt_forAttributes.AsEnumerable().Sum(row => double.Parse(row[28].ToString()) ) / dt_forAttributes.Rows.Count;
+                        double Top25TAILGATEFRIENDELY = dt_forAttributes.AsEnumerable().Sum(row => double.Parse(row[29].ToString())) / dt_forAttributes.Rows.Count;
+                        double Top25SMOKINGALLOWED = dt_forAttributes.AsEnumerable().Sum(row => double.Parse(row[30].ToString())) / dt_forAttributes.Rows.Count;
+                        double Top25FESTIVALFRIENDLY = dt_forAttributes.AsEnumerable().Sum(row => double.Parse(row[31].ToString())) / dt_forAttributes.Rows.Count;
+                        double Top25GENERATOR = dt_forAttributes.AsEnumerable().Sum(row => double.Parse(row[32].ToString())) / dt_forAttributes.Rows.Count;
                         AcAHTable.Rows.Add("PET FRIENDELY", Top25PETFRIENDELY);
                         AcAHTable.Rows.Add("TAILGATE FRIENDELY", Top25TAILGATEFRIENDELY);
                         AcAHTable.Rows.Add("SMOKING ALLOWED", Top25SMOKINGALLOWED);
