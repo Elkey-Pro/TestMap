@@ -48,6 +48,11 @@
             this.txt_log = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btn_OpenTemp = new System.Windows.Forms.Button();
+            this.btn_openLogo = new System.Windows.Forms.Button();
+            this.btn_openDocx = new System.Windows.Forms.Button();
+            this.btn_openXlsx = new System.Windows.Forms.Button();
+            this.btn_openCSV = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -68,11 +73,7 @@
             this.rd_runAllReport = new System.Windows.Forms.RadioButton();
             this.button3 = new System.Windows.Forms.Button();
             this.dGVDataWFromXl = new System.Windows.Forms.DataGridView();
-            this.btn_openCSV = new System.Windows.Forms.Button();
-            this.btn_openXlsx = new System.Windows.Forms.Button();
-            this.btn_openDocx = new System.Windows.Forms.Button();
-            this.btn_openLogo = new System.Windows.Forms.Button();
-            this.btn_OpenTemp = new System.Windows.Forms.Button();
+            this.btn_fullauto = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -98,6 +99,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.btn_fullauto);
             this.tabPage1.Controls.Add(this.button6);
             this.tabPage1.Controls.Add(this.button5);
             this.tabPage1.Controls.Add(this.button2);
@@ -307,6 +309,56 @@
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             // 
+            // btn_OpenTemp
+            // 
+            this.btn_OpenTemp.Location = new System.Drawing.Point(383, 61);
+            this.btn_OpenTemp.Name = "btn_OpenTemp";
+            this.btn_OpenTemp.Size = new System.Drawing.Size(41, 23);
+            this.btn_OpenTemp.TabIndex = 62;
+            this.btn_OpenTemp.Text = "Open";
+            this.btn_OpenTemp.UseVisualStyleBackColor = true;
+            this.btn_OpenTemp.Click += new System.EventHandler(this.btn_OpenTemp_Click);
+            // 
+            // btn_openLogo
+            // 
+            this.btn_openLogo.Location = new System.Drawing.Point(383, 224);
+            this.btn_openLogo.Name = "btn_openLogo";
+            this.btn_openLogo.Size = new System.Drawing.Size(41, 23);
+            this.btn_openLogo.TabIndex = 61;
+            this.btn_openLogo.Text = "Open";
+            this.btn_openLogo.UseVisualStyleBackColor = true;
+            this.btn_openLogo.Click += new System.EventHandler(this.btn_openLogo_Click);
+            // 
+            // btn_openDocx
+            // 
+            this.btn_openDocx.Location = new System.Drawing.Point(383, 184);
+            this.btn_openDocx.Name = "btn_openDocx";
+            this.btn_openDocx.Size = new System.Drawing.Size(41, 23);
+            this.btn_openDocx.TabIndex = 60;
+            this.btn_openDocx.Text = "Open";
+            this.btn_openDocx.UseVisualStyleBackColor = true;
+            this.btn_openDocx.Click += new System.EventHandler(this.btn_openDocx_Click);
+            // 
+            // btn_openXlsx
+            // 
+            this.btn_openXlsx.Location = new System.Drawing.Point(383, 141);
+            this.btn_openXlsx.Name = "btn_openXlsx";
+            this.btn_openXlsx.Size = new System.Drawing.Size(41, 23);
+            this.btn_openXlsx.TabIndex = 59;
+            this.btn_openXlsx.Text = "Open";
+            this.btn_openXlsx.UseVisualStyleBackColor = true;
+            this.btn_openXlsx.Click += new System.EventHandler(this.btn_openXlsx_Click);
+            // 
+            // btn_openCSV
+            // 
+            this.btn_openCSV.Location = new System.Drawing.Point(383, 98);
+            this.btn_openCSV.Name = "btn_openCSV";
+            this.btn_openCSV.Size = new System.Drawing.Size(41, 23);
+            this.btn_openCSV.TabIndex = 58;
+            this.btn_openCSV.Text = "Open";
+            this.btn_openCSV.UseVisualStyleBackColor = true;
+            this.btn_openCSV.Click += new System.EventHandler(this.btn_openCSV_Click);
+            // 
             // label12
             // 
             this.label12.AutoSize = true;
@@ -496,55 +548,15 @@
             this.dGVDataWFromXl.Size = new System.Drawing.Size(357, 438);
             this.dGVDataWFromXl.TabIndex = 0;
             // 
-            // btn_openCSV
+            // btn_fullauto
             // 
-            this.btn_openCSV.Location = new System.Drawing.Point(383, 98);
-            this.btn_openCSV.Name = "btn_openCSV";
-            this.btn_openCSV.Size = new System.Drawing.Size(41, 23);
-            this.btn_openCSV.TabIndex = 58;
-            this.btn_openCSV.Text = "Open";
-            this.btn_openCSV.UseVisualStyleBackColor = true;
-            this.btn_openCSV.Click += new System.EventHandler(this.btn_openCSV_Click);
-            // 
-            // btn_openXlsx
-            // 
-            this.btn_openXlsx.Location = new System.Drawing.Point(383, 141);
-            this.btn_openXlsx.Name = "btn_openXlsx";
-            this.btn_openXlsx.Size = new System.Drawing.Size(41, 23);
-            this.btn_openXlsx.TabIndex = 59;
-            this.btn_openXlsx.Text = "Open";
-            this.btn_openXlsx.UseVisualStyleBackColor = true;
-            this.btn_openXlsx.Click += new System.EventHandler(this.btn_openXlsx_Click);
-            // 
-            // btn_openDocx
-            // 
-            this.btn_openDocx.Location = new System.Drawing.Point(383, 184);
-            this.btn_openDocx.Name = "btn_openDocx";
-            this.btn_openDocx.Size = new System.Drawing.Size(41, 23);
-            this.btn_openDocx.TabIndex = 60;
-            this.btn_openDocx.Text = "Open";
-            this.btn_openDocx.UseVisualStyleBackColor = true;
-            this.btn_openDocx.Click += new System.EventHandler(this.btn_openDocx_Click);
-            // 
-            // btn_openLogo
-            // 
-            this.btn_openLogo.Location = new System.Drawing.Point(383, 224);
-            this.btn_openLogo.Name = "btn_openLogo";
-            this.btn_openLogo.Size = new System.Drawing.Size(41, 23);
-            this.btn_openLogo.TabIndex = 61;
-            this.btn_openLogo.Text = "Open";
-            this.btn_openLogo.UseVisualStyleBackColor = true;
-            this.btn_openLogo.Click += new System.EventHandler(this.btn_openLogo_Click);
-            // 
-            // btn_OpenTemp
-            // 
-            this.btn_OpenTemp.Location = new System.Drawing.Point(383, 61);
-            this.btn_OpenTemp.Name = "btn_OpenTemp";
-            this.btn_OpenTemp.Size = new System.Drawing.Size(41, 23);
-            this.btn_OpenTemp.TabIndex = 62;
-            this.btn_OpenTemp.Text = "Open";
-            this.btn_OpenTemp.UseVisualStyleBackColor = true;
-            this.btn_OpenTemp.Click += new System.EventHandler(this.btn_OpenTemp_Click);
+            this.btn_fullauto.Location = new System.Drawing.Point(12, 135);
+            this.btn_fullauto.Name = "btn_fullauto";
+            this.btn_fullauto.Size = new System.Drawing.Size(82, 39);
+            this.btn_fullauto.TabIndex = 49;
+            this.btn_fullauto.Text = "Full Auto";
+            this.btn_fullauto.UseVisualStyleBackColor = true;
+            this.btn_fullauto.Click += new System.EventHandler(this.btn_fullauto_Click);
             // 
             // MainForm
             // 
@@ -614,6 +626,7 @@
         private System.Windows.Forms.Button btn_openXlsx;
         private System.Windows.Forms.Button btn_openCSV;
         private System.Windows.Forms.Button btn_OpenTemp;
+        private System.Windows.Forms.Button btn_fullauto;
     }
 }
 
